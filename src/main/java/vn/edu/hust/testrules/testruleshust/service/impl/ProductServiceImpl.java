@@ -6,8 +6,6 @@ import vn.edu.hust.testrules.testruleshust.entity.ProductEntity;
 import vn.edu.hust.testrules.testruleshust.repository.ProductRepository;
 import vn.edu.hust.testrules.testruleshust.service.ProductService;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
