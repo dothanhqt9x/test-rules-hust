@@ -32,7 +32,7 @@ public class LCSForImage {
       // Reading file from local directory by
       // creating object of File class
       URL fileA = new URL("https://test-rules-hust.s3.ap-northeast-1.amazonaws.com/img1.jpg");
-      File fileB = new File("E:\\img\\img2.jpg");
+      URL fileB = new URL("https://test-rules-hust.s3.ap-northeast-1.amazonaws.com/img2.jpg");
 
       // Reading files
       imgA = ImageIO.read(fileA);
