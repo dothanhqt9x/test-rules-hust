@@ -19,4 +19,8 @@ public class QuestionEntity {
     private String questionJson;
 
     private String answer;
+    private String image;
+
+    @Column(name = "question_number")
+    private Integer questionNumber;
 }

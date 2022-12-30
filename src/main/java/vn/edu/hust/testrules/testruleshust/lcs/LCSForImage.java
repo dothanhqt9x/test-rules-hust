@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+// import com.google.api.services.drive.model.File;
 
 public class LCSForImage {
 
@@ -29,8 +31,8 @@ public class LCSForImage {
 
       // Reading file from local directory by
       // creating object of File class
-      File fileA = new File("E:\\img" + "\\img1.jpg");
-      File fileB = new File("E:\\img" + "\\img3.jpg");
+      URL fileA = new URL("https://test-rules-hust.s3.ap-northeast-1.amazonaws.com/img1.jpg");
+      File fileB = new File("E:\\img\\img2.jpg");
 
       // Reading files
       imgA = ImageIO.read(fileA);

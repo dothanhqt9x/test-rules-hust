@@ -8,6 +8,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.stereotype.Service;
 import vn.edu.hust.testrules.testruleshust.api.question.getall.apiresponse.QuestionGetAllApiResponse;
 import vn.edu.hust.testrules.testruleshust.entity.QuestionEntity;
+import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.repository.QuestionCRUDRepository;
 import vn.edu.hust.testrules.testruleshust.repository.QuestionRepository;
 import vn.edu.hust.testrules.testruleshust.service.question.json.QuestionJson;
@@ -17,11 +18,7 @@ import vn.edu.hust.testrules.testruleshust.service.question.serviceresponse.Ques
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +30,7 @@ public class QuestionServiceImpl implements QuestionService {
   private final QuestionCRUDRepository questionCRUDRepository;
 
   String FILE_NAME =
-      "E:\\20221\\test-rules-hust\\src\\main\\java\\vn\\edu\\hust\\testrules\\testruleshust\\lcs\\list_cau_hoi_1.docx";
+      "E:\\sourcecode\\test-rules-hust\\src\\main\\java\\vn\\edu\\hust\\testrules\\testruleshust\\lcs\\list_cau_hoi_1.docx";
 
   @Override
   public QuestionServiceResponse getOneQuestion() throws JsonProcessingException {
@@ -60,7 +57,26 @@ public class QuestionServiceImpl implements QuestionService {
   }
 
   @Override
-  public void insertNewQuestion(QuestionServiceRequest request) throws JsonProcessingException {
+  public void insertNewQuestion(QuestionServiceRequest request)
+      throws JsonProcessingException, ServiceException {
+
+    System.out.println("Start time" + System.currentTimeMillis());
+
+    String questionRequest = convertToTextStandard(request.getQuestion(), request.getAnswer());
+    List<QuestionEntity> questionEntities = questionRepository.findAll();
+    int length = questionEntities.size();
+    for (int i = 0; i < length; i++) {
+      QuestionEntity questionEntity = questionEntities.get(i);
+      QuestionJson questionJson =
+          objectMapper.readValue(questionEntity.getQuestionJson(), QuestionJson.class);
+      String question = questionJson.getQuestion();
+      List<String> answers = questionJson.getAnswer();
+      String questionTextStandard = convertToTextStandard(question, answers);
+      int lcs = LCS(questionRequest.toCharArray(), questionTextStandard.toCharArray());
+      if (lcs / Math.min(questionRequest.length(), questionTextStandard.length()) >= 0.5) {
+        throw new ServiceException("question_duplicate");
+      }
+    }
     String questionJson =
         objectMapper.writeValueAsString(
             QuestionJson.builder()
@@ -74,6 +90,16 @@ public class QuestionServiceImpl implements QuestionService {
     questionRepository.save(entity);
   }
 
+  private String convertToTextStandard(String question, List<String> answers) {
+    String regex =
+        "[^a-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]";
+    String result = question.toLowerCase(Locale.ROOT).replaceAll(regex, "");
+    for (int i = 0; i < answers.size(); i++) {
+      result = result.concat(answers.get(i).toLowerCase(Locale.ROOT).replaceAll(regex, ""));
+    }
+    return result;
+  }
+
   @Override
   public List<QuestionGetAllApiResponse> getAllQuestion() {
     List<QuestionGetAllApiResponse> questionGetAllApiResponseList = new ArrayList<>();
@@ -82,14 +108,14 @@ public class QuestionServiceImpl implements QuestionService {
       QuestionEntity questionEntity = questionEntities.get(k);
       try {
         QuestionJson question =
-                objectMapper.readValue(questionEntity.getQuestionJson(), QuestionJson.class);
+            objectMapper.readValue(questionEntity.getQuestionJson(), QuestionJson.class);
         String[] strings =
-                questionEntity
-                        .getAnswer()
-                        .replace("[", "")
-                        .replace("]", "")
-                        .replaceAll("\\s+", "")
-                        .split(",");
+            questionEntity
+                .getAnswer()
+                .replace("[", "")
+                .replace("]", "")
+                .replaceAll("\\s+", "")
+                .split(",");
         Integer[] numbers = new Integer[strings.length];
         for (int i = 0; i < numbers.length; i++) {
           try {
@@ -99,45 +125,45 @@ public class QuestionServiceImpl implements QuestionService {
           }
         }
         questionGetAllApiResponseList.add(
-                QuestionGetAllApiResponse.builder()
-                        .question(question.getQuestion())
-                        .answer(question.getAnswer())
-                        .key(Arrays.stream(numbers).toList())
-                        .build());
+            QuestionGetAllApiResponse.builder()
+                .question(question.getQuestion())
+                .answer(question.getAnswer())
+                .key(Arrays.stream(numbers).toList())
+                .build());
       } catch (JsonProcessingException e) {
         e.printStackTrace();
       }
     }
-//    questionEntities.forEach(
-//        questionEntity -> {
-//          try {
-//            QuestionJson question =
-//                objectMapper.readValue(questionEntity.getQuestionJson(), QuestionJson.class);
-//            String[] strings =
-//                questionEntity
-//                    .getAnswer()
-//                    .replace("[", "")
-//                    .replace("]", "")
-//                    .replaceAll("\\s+", "")
-//                    .split(",");
-//            Integer[] numbers = new Integer[strings.length];
-//            for (int i = 0; i < numbers.length; i++) {
-//              try {
-//                numbers[i] = Integer.parseInt(strings[i]);
-//              } catch (NumberFormatException nfe) {
-//                numbers[i] = null;
-//              }
-//            }
-//            questionGetAllApiResponseList.add(
-//                QuestionGetAllApiResponse.builder()
-//                    .question(question.getQuestion())
-//                    .answer(question.getAnswer())
-//                    .key(Arrays.stream(numbers).toList())
-//                    .build());
-//          } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//          }
-//        });
+    //    questionEntities.forEach(
+    //        questionEntity -> {
+    //          try {
+    //            QuestionJson question =
+    //                objectMapper.readValue(questionEntity.getQuestionJson(), QuestionJson.class);
+    //            String[] strings =
+    //                questionEntity
+    //                    .getAnswer()
+    //                    .replace("[", "")
+    //                    .replace("]", "")
+    //                    .replaceAll("\\s+", "")
+    //                    .split(",");
+    //            Integer[] numbers = new Integer[strings.length];
+    //            for (int i = 0; i < numbers.length; i++) {
+    //              try {
+    //                numbers[i] = Integer.parseInt(strings[i]);
+    //              } catch (NumberFormatException nfe) {
+    //                numbers[i] = null;
+    //              }
+    //            }
+    //            questionGetAllApiResponseList.add(
+    //                QuestionGetAllApiResponse.builder()
+    //                    .question(question.getQuestion())
+    //                    .answer(question.getAnswer())
+    //                    .key(Arrays.stream(numbers).toList())
+    //                    .build());
+    //          } catch (JsonProcessingException e) {
+    //            e.printStackTrace();
+    //          }
+    //        });
 
     return questionGetAllApiResponseList;
   }
@@ -146,7 +172,13 @@ public class QuestionServiceImpl implements QuestionService {
   public void insertAllQuestion() throws IOException {
     try (XWPFDocument doc = new XWPFDocument(Files.newInputStream(Paths.get(FILE_NAME)))) {
       XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(doc);
-      String docText = xwpfWordExtractor.getText();
+      String docText =
+          xwpfWordExtractor
+              .getText()
+              .replace("A.", "")
+              .replace("B.", "")
+              .replace("C.", "")
+              .replace("D.", "");
 
       String[] blocks = docText.split("\n\n");
       for (int i = 0; i < blocks.length; i++) {
@@ -177,21 +209,37 @@ public class QuestionServiceImpl implements QuestionService {
                   }
                 });
         for (int j = 1; j < block.length - 1; j++) {
-            answer.add(block[j].substring(3));
+          answer.add(block[j]);
         }
         String questionJson =
-                objectMapper.writeValueAsString(
-                        QuestionJson.builder()
-                                .question(question)
-                                .answer(answer)
-                                .build());
+            objectMapper.writeValueAsString(
+                QuestionJson.builder().question(question).answer(answer).build());
         QuestionEntity entity = new QuestionEntity();
-        entity.setId(i+1);
+        entity.setQuestionNumber(i + 1);
         entity.setQuestionJson(questionJson);
         entity.setAnswer(keys.toString());
         entity.setType("01");
         questionRepository.save(entity);
       }
     }
+  }
+
+  private int LCS(char[] X, char[] Y) {
+    int m = X.length;
+    int n = Y.length;
+    int LCStuff[][] = new int[m + 1][n + 1];
+
+    int result = 0;
+
+    for (int i = 0; i <= m; i++) {
+      for (int j = 0; j <= n; j++) {
+        if (i == 0 || j == 0) LCStuff[i][j] = 0;
+        else if (X[i - 1] == Y[j - 1]) {
+          LCStuff[i][j] = LCStuff[i - 1][j - 1] + 1;
+          result = Integer.max(result, LCStuff[i][j]);
+        } else LCStuff[i][j] = 0;
+      }
+    }
+    return result;
   }
 }

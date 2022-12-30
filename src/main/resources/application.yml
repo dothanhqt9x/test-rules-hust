@@ -1,0 +1,20 @@
+cloud:
+  aws:
+    region:
+      static: ap-northeast-1
+    stack:
+      auto: false
+    credentials:
+      accessKey: AKIA3JXQWGCFASSJT2GL
+      secretKey: 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
+
+application:
+  bucket:
+    name: test-rules-hust
+
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error

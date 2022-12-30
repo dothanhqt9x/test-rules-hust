@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.exception.response.ErrorResponse;
 
 import java.util.Arrays;
@@ -23,6 +24,18 @@ public class TestRulesExceptionHandler extends ResponseEntityExceptionHandler {
 
   private final MessageSource messageSource;
 
+  @ExceptionHandler({ServiceException.class})
+  public ResponseEntity<Object> handleServiceException(ServiceException exception) {
+
+    log.error("log error is here service exception");
+
+    if ("question_duplicate".equals(exception.getCauseId())) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("question_duplicate").build());
+    }
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("question_duplicate").build());
+  }
+
   // This is demo
   @ExceptionHandler({Exception.class})
   public ResponseEntity<Object> handleRuntimeException(Exception exception, WebRequest request) {
@@ -33,7 +46,7 @@ public class TestRulesExceptionHandler extends ResponseEntityExceptionHandler {
     ErrorResponse response =
         ErrorResponse.builder()
             .result(RESULT_NG)
-            .errorMessage(Arrays.asList("This is error 500"))
+            .errorMessage("This is error 500")
             .build();
 
     return super.handleExceptionInternal(

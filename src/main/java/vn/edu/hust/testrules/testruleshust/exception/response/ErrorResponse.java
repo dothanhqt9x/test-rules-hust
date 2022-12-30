@@ -14,5 +14,5 @@ public class ErrorResponse {
   private final String result;
 
   @JsonProperty("errorMessage")
-  private final List<String> errorMessage;
+  private final String errorMessage;
 }

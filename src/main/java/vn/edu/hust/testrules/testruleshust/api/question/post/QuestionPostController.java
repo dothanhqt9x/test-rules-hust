@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import vn.edu.hust.testrules.testruleshust.api.question.post.apirequest.QuestionPostApiRequest;
+import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.service.question.QuestionService;
 import vn.edu.hust.testrules.testruleshust.service.question.servicerequest.QuestionServiceRequest;
 
@@ -22,7 +23,7 @@ public class QuestionPostController {
   @PostMapping("/question/create")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void createQuestion(@RequestBody QuestionPostApiRequest request)
-      throws JsonProcessingException {
+          throws JsonProcessingException, ServiceException {
     QuestionServiceRequest questionServiceRequest =
         QuestionServiceRequest.builder()
             .question(request.getQuestion())
