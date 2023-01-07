@@ -6,4 +6,6 @@ import vn.edu.hust.testrules.testruleshust.entity.QuestionEntity;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<QuestionEntity, Integer> {
+
+    QuestionEntity findByQuestionNumber(Integer questionNumber);
 }

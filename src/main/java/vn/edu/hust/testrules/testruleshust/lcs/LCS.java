@@ -42,8 +42,8 @@ public class LCS {
     System.out.println("Start time :" + System.currentTimeMillis());
     String regex =
         "[^a-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]";
-    String X = "XIN chào tất".toLowerCase(Locale.ROOT).replaceAll(regex, "");
-    String Y = "xin chào các bạn nha".toLowerCase(Locale.ROOT).replaceAll(regex, "");
+    String X = "xinchaotatcacacban".toLowerCase(Locale.ROOT).replaceAll(regex, "");
+    String Y = "xinchaocacacban".toLowerCase(Locale.ROOT).replaceAll(regex, "");
 
     int m = X.length();
     int n = Y.length();

@@ -7,6 +7,6 @@ import lombok.Getter;
 @Builder
 public class HistoryApiResponse {
 
-  private final Integer id;
-  private final String name;
+  private final Integer id; // id of table history
+  private final String name; // time of table history
 }

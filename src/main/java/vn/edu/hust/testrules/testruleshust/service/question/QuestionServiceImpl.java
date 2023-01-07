@@ -202,18 +202,37 @@ public class QuestionServiceImpl implements QuestionService {
 
     // score
     int score = 0;
+
+    // size
     int size = requests.size();
+
+    // declare historyJsons for table history column history_json
+    List<HistoryJson> historyJsons = new ArrayList<>();
+
+    // add element for historyJsons
     for (int i = 0; i < size; i++) {
-      if (requests.get(i).getFlag() == 1) {
+      SubmitQuestionApiRequest request = requests.get(i);
+      Integer questionNumber = request.getQuestionNumber();
+      if (request.getFlag() == 1) {
         score++;
       }
+      QuestionEntity questionEntity = questionRepository.findByQuestionNumber(questionNumber);
+      QuestionJson questionJson =
+          objectMapper.readValue(questionEntity.getQuestionJson(), QuestionJson.class);
+      historyJsons.add(
+          HistoryJson.builder()
+              .question(questionJson.getQuestion())
+              .answer(questionJson.getAnswer())
+              .chooses(request.getChooses())
+              .flag(request.getFlag())
+              .build());
     }
 
     // user_id
     Integer userId = Math.toIntExact(userRepository.findUserEntityByEmail(email).getId());
 
     // convert historyJson to String
-    String historyJson = objectMapper.writeValueAsString(requests);
+    String historyJson = objectMapper.writeValueAsString(historyJsons);
 
     // save history
     HistoryEntity entity = new HistoryEntity();

@@ -2,7 +2,6 @@ package vn.edu.hust.testrules.testruleshust.service.question.json;
 
 import lombok.Builder;
 import lombok.Getter;
-import vn.edu.hust.testrules.testruleshust.api.question.post.apirequest.SubmitQuestionApiRequest;
 
 import java.util.List;
 
@@ -10,5 +9,8 @@ import java.util.List;
 @Builder
 public class HistoryJson {
 
-    private final List<SubmitQuestionApiRequest> historyJson;
+  private final String question;
+  private final List<String> answer;
+  private final List<Integer> chooses;
+  private final Integer flag;
 }

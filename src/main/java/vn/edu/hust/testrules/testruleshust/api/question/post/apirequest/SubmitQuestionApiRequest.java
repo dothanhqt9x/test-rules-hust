@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 public class SubmitQuestionApiRequest {
 
-  private final String questionNumber;
+  private final Integer questionNumber;
   private final List<Integer> chooses;
   private final Integer flag;
 }
