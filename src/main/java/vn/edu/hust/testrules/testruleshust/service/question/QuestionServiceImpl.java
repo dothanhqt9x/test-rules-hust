@@ -8,11 +8,17 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.api.question.getall.apiresponse.QuestionGetAllApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.question.post.apirequest.SubmitQuestionApiRequest;
+import vn.edu.hust.testrules.testruleshust.api.question.post.apiresponse.HistoryApiResponse;
+import vn.edu.hust.testrules.testruleshust.entity.HistoryEntity;
 import vn.edu.hust.testrules.testruleshust.entity.QuestionEntity;
 import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
+import vn.edu.hust.testrules.testruleshust.repository.HistoryRepository;
 import vn.edu.hust.testrules.testruleshust.repository.QuestionCRUDRepository;
 import vn.edu.hust.testrules.testruleshust.repository.QuestionRepository;
+import vn.edu.hust.testrules.testruleshust.repository.UserRepository;
 import vn.edu.hust.testrules.testruleshust.service.aws.S3BucketStorageService;
+import vn.edu.hust.testrules.testruleshust.service.question.json.HistoryJson;
 import vn.edu.hust.testrules.testruleshust.service.question.json.QuestionJson;
 import vn.edu.hust.testrules.testruleshust.service.question.servicerequest.QuestionServiceRequest;
 import vn.edu.hust.testrules.testruleshust.service.question.serviceresponse.QuestionServiceResponse;
@@ -26,6 +32,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.*;
 
@@ -36,6 +43,8 @@ public class QuestionServiceImpl implements QuestionService {
   private final ObjectMapper objectMapper;
 
   private final QuestionRepository questionRepository;
+  private final HistoryRepository historyRepository;
+  private final UserRepository userRepository;
   private final QuestionCRUDRepository questionCRUDRepository;
   private final S3BucketStorageService service;
 
@@ -75,7 +84,7 @@ public class QuestionServiceImpl implements QuestionService {
     String questionRequest = convertToTextStandard(request.getQuestion(), request.getAnswer());
     List<QuestionEntity> questionEntities = questionRepository.findAll();
 
-    if (Objects.isNull(request.getImage())) {
+    if (Objects.isNull(request.getImage()) || request.getImage().isEmpty()) {
       checkText(questionEntities, questionRequest);
     } else {
       checkTextAndImage(questionEntities, questionRequest, request);
@@ -187,6 +196,56 @@ public class QuestionServiceImpl implements QuestionService {
     }
   }
 
+  @Override
+  public void submitQuestion(List<SubmitQuestionApiRequest> requests, String email)
+      throws JsonProcessingException {
+
+    // score
+    int score = 0;
+    int size = requests.size();
+    for (int i = 0; i < size; i++) {
+      if (requests.get(i).getFlag() == 1) {
+        score++;
+      }
+    }
+
+    // user_id
+    Integer userId = Math.toIntExact(userRepository.findUserEntityByEmail(email).getId());
+
+    // convert historyJson to String
+    String historyJson = objectMapper.writeValueAsString(requests);
+
+    // save history
+    HistoryEntity entity = new HistoryEntity();
+    entity.setUserId(userId);
+    entity.setHistoryJson(historyJson);
+    entity.setScore(score);
+    entity.setTimeTestAt(LocalDateTime.now());
+
+    historyRepository.save(entity);
+  }
+
+  @Override
+  public List<HistoryApiResponse> getListHistory(String email) {
+    // user_id
+    Integer userId = Math.toIntExact(userRepository.findUserEntityByEmail(email).getId());
+
+    // get list_history
+    List<HistoryEntity> historyEntities = historyRepository.findHistoryEntitiesByUserId(userId);
+    List<HistoryApiResponse> historyApiResponses = new ArrayList<>();
+
+    historyEntities.forEach(
+        historyEntity -> {
+          historyApiResponses.add(
+              HistoryApiResponse.builder()
+                  .id(historyEntity.getId())
+                  .name(historyEntity.getTimeTestAt().toString())
+                  .build());
+        });
+
+    return historyApiResponses;
+  }
+
   private int LCS(char[] X, char[] Y) {
     int m = X.length;
     int n = Y.length;
@@ -228,7 +287,7 @@ public class QuestionServiceImpl implements QuestionService {
       String questionTextStandard = convertToTextStandard(question, answers);
       int lcs = LCS(questionRequest.toCharArray(), questionTextStandard.toCharArray());
       if (lcs / Math.min(questionRequest.length(), questionTextStandard.length()) >= 0.8) {
-        throw new ServiceException("question_duplicate");
+        throw new ServiceException("question_duplicate_text ");
       }
     }
   }
@@ -250,10 +309,12 @@ public class QuestionServiceImpl implements QuestionService {
       if (Objects.nonNull(questionEntity.getImage())) {
         lcsForImage = CheckForImage(request.getImage(), questionEntity.getImage());
         if (lcsForImage <= 20 && lcsForText >= 0.6) {
-          throw new ServiceException("question_duplicate");
+          System.out.println("End time" + System.currentTimeMillis());
+          throw new ServiceException("question_duplicate_text_and_image");
         }
       } else if (lcsForText >= 0.8) {
-        throw new ServiceException("question_duplicate");
+        System.out.println("End time" + System.currentTimeMillis());
+        throw new ServiceException("question_duplicate_text");
       } else {
         service.uploadFile(request.getImage());
       }

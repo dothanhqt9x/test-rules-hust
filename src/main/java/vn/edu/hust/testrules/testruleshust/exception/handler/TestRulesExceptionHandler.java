@@ -29,8 +29,12 @@ public class TestRulesExceptionHandler extends ResponseEntityExceptionHandler {
 
     log.error("log error is here service exception");
 
-    if ("question_duplicate".equals(exception.getCauseId())) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("question_duplicate").build());
+    if ("question_duplicate_text_and_image".equals(exception.getCauseId())) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("question_duplicate_text_and_image").build());
+    }
+
+    if ("question_duplicate_text".equals(exception.getCauseId())) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("question_duplicate_text").build());
     }
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("question_duplicate").build());

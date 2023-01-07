@@ -28,7 +28,7 @@ public class S3BucketStorageService {
   /**
    * Upload file into AWS S3
    *
-   * @param file
+   * @param file MultipartFile
    * @return String
    */
   public String uploadFile(MultipartFile file) {
