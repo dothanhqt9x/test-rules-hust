@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.api.question.getall.apiresponse.QuestionGetAllApiResponse;
@@ -263,6 +266,31 @@ public class QuestionServiceImpl implements QuestionService {
         });
 
     return historyApiResponses;
+  }
+
+  @Override
+  public List<HistoryJson> getHistoryDetails(Integer historyId)
+      throws JsonProcessingException, JSONException, ServiceException {
+
+    // get historyEntity from database
+    Optional<HistoryEntity> historyEntityOptional = historyRepository.findById(historyId);
+    if (historyEntityOptional.isEmpty()) {
+      throw new ServiceException("history_not_found");
+    }
+    HistoryEntity historyEntity = historyEntityOptional.get();
+
+    // declare list history_json
+    List<HistoryJson> historyJsons = new ArrayList<>();
+
+    // parse array_json -> string and insert HistoryJson
+    JSONArray jsonArray = new JSONArray(historyEntity.getHistoryJson());
+    for (int i = 0; i < jsonArray.length(); i++) {
+      JSONObject jsonObject = jsonArray.getJSONObject(i);
+      String jsonObjectAsString = jsonObject.toString();
+      historyJsons.add(objectMapper.readValue(jsonObjectAsString, HistoryJson.class));
+    }
+
+    return historyJsons;
   }
 
   private int LCS(char[] X, char[] Y) {

@@ -3,6 +3,7 @@ package vn.edu.hust.testrules.testruleshust.api.question.post;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +14,7 @@ import vn.edu.hust.testrules.testruleshust.api.question.post.apirequest.SubmitQu
 import vn.edu.hust.testrules.testruleshust.api.question.post.apiresponse.HistoryApiResponse;
 import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.service.question.QuestionService;
+import vn.edu.hust.testrules.testruleshust.service.question.json.HistoryJson;
 import vn.edu.hust.testrules.testruleshust.service.question.servicerequest.QuestionServiceRequest;
 
 import java.io.IOException;
@@ -72,8 +74,9 @@ public class QuestionPostController {
   }
 
   @GetMapping("get_history_details")
-  public List<HistoryApiResponse> getHistoryDetails(@RequestParam(name = "id") Integer id) {
+  public List<HistoryJson> getHistoryDetails(@RequestParam(name = "id") Integer id)
+      throws JsonProcessingException, JSONException, ServiceException {
 
-    return null;
+    return questionService.getHistoryDetails(id);
   }
 }
