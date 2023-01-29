@@ -44,16 +44,16 @@ public interface PostRepository extends JpaRepository<PostEntity, Integer> {
       value =
           "SELECT p.id AS postId,\n"
               + "  (SELECT user.email\n"
-              + "   FROM USER\n"
+              + "   FROM user\n"
               + "   WHERE user.id = p.user_id) AS postName,\n"
               + "p.content AS postContent, p.time as postTime, c.id as commentId, (SELECT user.email\n"
-              + "   FROM USER\n"
+              + "   FROM user\n"
               + "   WHERE user.id = c.user_id) as commentName, c.time as commentTime, c.content as commentContent,\n"
               + "   (SELECT user.email\n"
-              + "   FROM USER\n"
+              + "   FROM user\n"
               + "   WHERE user.id = sc.user_id) as subCommentName, sc.time as subCommentTime, sc.content as subCommentContent\n"
               + "FROM post p\n"
-              + "JOIN COMMENT c ON c.post_id = p.id\n"
+              + "LEFT JOIN comment c ON c.post_id = p.id\n"
               + "LEFT JOIN sub_comment sc ON sc.comment_id = c.id\n"
               + "WHERE p.id = :postId")
   List<PostDetailView> getPostJson(@Param("postId") Integer id);

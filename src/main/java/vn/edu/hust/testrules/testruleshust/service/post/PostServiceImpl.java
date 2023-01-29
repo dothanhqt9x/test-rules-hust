@@ -17,10 +17,7 @@ import vn.edu.hust.testrules.testruleshust.repository.PostRepository;
 import vn.edu.hust.testrules.testruleshust.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -70,6 +67,10 @@ public class PostServiceImpl implements PostService {
     }
 
     for (Integer i : commentIds) {
+
+      if ( Objects.isNull(i)) {
+        break;
+      }
 
       // build sub_comment
       List<SubCommentJson> subCommentJsons = new ArrayList<>();
