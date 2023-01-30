@@ -86,24 +86,30 @@ public class PostServiceImpl implements PostService {
                   .build());
         }
       }
-      if (subCommentJsons.get(0).getEmail() == null) {
-        commentJsons.add(
-            CommentJson.builder()
-                .commentId(i)
-                .email(postDetailViews.get(i).getCommentName())
-                .content(postDetailViews.get(i).getCommentContent())
-                .time(postDetailViews.get(i).getCommentTime())
-                .subComment(null)
-                .build());
-      } else {
-        commentJsons.add(
-            CommentJson.builder()
-                .commentId(i)
-                .email(postDetailViews.get(i).getCommentName())
-                .content(postDetailViews.get(i).getCommentContent())
-                .time(postDetailViews.get(i).getCommentTime())
-                .subComment(subCommentJsons)
-                .build());
+
+      for (int j = 0; j < postDetailViews.size(); j++) {
+        PostDetailView postDetailView = postDetailViews.get(j);
+        if (postDetailView.getCommentId() == i) {
+          if (subCommentJsons.get(0).getEmail() == null) {
+            commentJsons.add(
+                    CommentJson.builder()
+                            .commentId(i)
+                            .email(postDetailViews.get(j).getCommentName())
+                            .content(postDetailViews.get(j).getCommentContent())
+                            .time(postDetailViews.get(j).getCommentTime())
+                            .subComment(null)
+                            .build());
+          } else {
+            commentJsons.add(
+                    CommentJson.builder()
+                            .commentId(i)
+                            .email(postDetailViews.get(j).getCommentName())
+                            .content(postDetailViews.get(j).getCommentContent())
+                            .time(postDetailViews.get(j).getCommentTime())
+                            .subComment(subCommentJsons)
+                            .build());
+          }
+        }
       }
     }
 
