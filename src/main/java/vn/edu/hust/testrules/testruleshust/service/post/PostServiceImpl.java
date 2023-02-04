@@ -109,6 +109,7 @@ public class PostServiceImpl implements PostService {
                             .subComment(subCommentJsons)
                             .build());
           }
+          break;
         }
       }
     }
