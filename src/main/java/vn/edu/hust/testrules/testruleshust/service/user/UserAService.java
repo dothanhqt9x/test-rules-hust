@@ -30,6 +30,9 @@ public class UserAService implements UserService {
 
     userEntity.setEmail(registerRequest.getEmail());
     userEntity.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+    userEntity.setName(registerRequest.getName());
+    userEntity.setMssv(registerRequest.getMssv());
+    userEntity.setSchool(registerRequest.getSchoolId());
     userEntity.setRole("01");
     userRepository.save(userEntity);
     return true;

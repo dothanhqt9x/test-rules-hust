@@ -20,4 +20,5 @@ public class UserEntity {
   private String role;
   private String isAdmin;
   private String address;
+  private Integer school;
 }
