@@ -7,7 +7,9 @@ import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.Registe
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.ChangePasswordApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.EditUserApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetDetailApiResponse;
+import vn.edu.hust.testrules.testruleshust.entity.SchoolEntity;
 import vn.edu.hust.testrules.testruleshust.entity.UserEntity;
+import vn.edu.hust.testrules.testruleshust.repository.SchoolRepository;
 import vn.edu.hust.testrules.testruleshust.repository.UserRepository;
 
 @Service
@@ -15,6 +17,7 @@ import vn.edu.hust.testrules.testruleshust.repository.UserRepository;
 public class UserAService implements UserService {
 
   private final UserRepository userRepository;
+  private final SchoolRepository schoolRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Override
@@ -45,11 +48,16 @@ public class UserAService implements UserService {
     if (user == null) {
       return null;
     }
+
+    SchoolEntity schoolEntity = schoolRepository.findSchoolEntityById(user.getSchool());
+
     return GetDetailApiResponse.builder()
         .email(user.getEmail())
         .username(user.getName())
         .mssv(user.getMssv())
         .role(user.getRole())
+        .address(user.getAddress())
+        .school(schoolEntity.getName())
         .build();
   }
 

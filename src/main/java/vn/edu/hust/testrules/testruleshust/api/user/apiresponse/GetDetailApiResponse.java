@@ -11,4 +11,6 @@ public class GetDetailApiResponse {
     private final String email;
     private final String role;
     private final String mssv;
+    private final String school;
+    private final String address;
 }
