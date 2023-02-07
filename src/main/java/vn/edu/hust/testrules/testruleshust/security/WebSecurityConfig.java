@@ -52,8 +52,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
         .antMatchers("/login", "/register")
         .permitAll() // Cho phép tất cả mọi người truy cập vào 2 địa chỉ này
-        .anyRequest()
-        .hasAnyAuthority("01"); // Tất cả các request khác đều cần phải xác thực mới được truy cập
+        .antMatchers(
+            "/user/detail",
+            "/user/edit",
+            "/change/password",
+            "/get_history_list",
+            "/get_history_details",
+            "/question/all",
+            "/question/submit",
+            "/getListQuestion",
+            "/create/post",
+            "/getAllPost",
+            "/addComment",
+            "/addSubComment",
+            "/getPostDetail")
+        .hasAuthority("01")
+        .antMatchers("/question/create", "/createSchool", "/editSchool")
+        .hasAuthority("02"); // Tất cả các request khác đều cần phải xác thực mới được truy cập
 
     // Thêm một lớp Filter kiểm tra jwt
     http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

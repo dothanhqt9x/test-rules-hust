@@ -18,7 +18,7 @@ public class UserEntity {
   private String mssv;
   private String email;
   private String role;
-  private String isAdmin;
   private String address;
   private Integer school;
+  private String gender;
 }
