@@ -68,7 +68,7 @@ public class PostServiceImpl implements PostService {
 
     for (Integer i : commentIds) {
 
-      if ( Objects.isNull(i)) {
+      if (Objects.isNull(i)) {
         break;
       }
 
@@ -92,22 +92,22 @@ public class PostServiceImpl implements PostService {
         if (postDetailView.getCommentId() == i) {
           if (subCommentJsons.get(0).getEmail() == null) {
             commentJsons.add(
-                    CommentJson.builder()
-                            .commentId(i)
-                            .email(postDetailViews.get(j).getCommentName())
-                            .content(postDetailViews.get(j).getCommentContent())
-                            .time(postDetailViews.get(j).getCommentTime())
-                            .subComment(null)
-                            .build());
+                CommentJson.builder()
+                    .commentId(i)
+                    .email(postDetailViews.get(j).getCommentName())
+                    .content(postDetailViews.get(j).getCommentContent())
+                    .time(postDetailViews.get(j).getCommentTime())
+                    .subComment(null)
+                    .build());
           } else {
             commentJsons.add(
-                    CommentJson.builder()
-                            .commentId(i)
-                            .email(postDetailViews.get(j).getCommentName())
-                            .content(postDetailViews.get(j).getCommentContent())
-                            .time(postDetailViews.get(j).getCommentTime())
-                            .subComment(subCommentJsons)
-                            .build());
+                CommentJson.builder()
+                    .commentId(i)
+                    .email(postDetailViews.get(j).getCommentName())
+                    .content(postDetailViews.get(j).getCommentContent())
+                    .time(postDetailViews.get(j).getCommentTime())
+                    .subComment(subCommentJsons)
+                    .build());
           }
           break;
         }

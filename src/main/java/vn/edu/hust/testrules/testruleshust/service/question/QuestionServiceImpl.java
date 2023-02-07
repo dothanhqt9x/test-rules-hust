@@ -8,18 +8,20 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.AllQuestionApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.getall.apiresponse.QuestionGetAllApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.post.apirequest.SubmitQuestionApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.question.post.apiresponse.HistoryApiResponse;
 import vn.edu.hust.testrules.testruleshust.entity.HistoryEntity;
+import vn.edu.hust.testrules.testruleshust.entity.PostEntity;
 import vn.edu.hust.testrules.testruleshust.entity.QuestionEntity;
 import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
-import vn.edu.hust.testrules.testruleshust.repository.HistoryRepository;
-import vn.edu.hust.testrules.testruleshust.repository.QuestionCRUDRepository;
-import vn.edu.hust.testrules.testruleshust.repository.QuestionRepository;
-import vn.edu.hust.testrules.testruleshust.repository.UserRepository;
+import vn.edu.hust.testrules.testruleshust.repository.*;
 import vn.edu.hust.testrules.testruleshust.service.aws.S3BucketStorageService;
 import vn.edu.hust.testrules.testruleshust.service.question.json.HistoryJson;
 import vn.edu.hust.testrules.testruleshust.service.question.json.QuestionJson;
@@ -49,6 +51,7 @@ public class QuestionServiceImpl implements QuestionService {
   private final HistoryRepository historyRepository;
   private final UserRepository userRepository;
   private final QuestionCRUDRepository questionCRUDRepository;
+  private final QuestionPagingRepository questionPagingRepository;
   private final S3BucketStorageService service;
 
   String FILE_NAME =
@@ -291,6 +294,38 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     return historyJsons;
+  }
+
+  @Override
+  public List<AllQuestionApiResponse> getListQuestion(int pageNo, int pageSize) {
+
+    // khoi tao
+    List<AllQuestionApiResponse> responses = new ArrayList<>();
+
+    // get from repository
+    Pageable paging = PageRequest.of(pageNo, pageSize);
+    Page<QuestionEntity> pagedResult = questionPagingRepository.findAll(paging);
+    List<QuestionEntity> questionEntities = pagedResult.toList();
+
+    // mapping
+    questionEntities.forEach(
+        questionEntity -> {
+          try {
+            // mapping QuestionJson
+            QuestionJson questionJson =
+                objectMapper.readValue(questionEntity.getQuestionJson(), QuestionJson.class);
+
+            // build response
+            responses.add(
+                AllQuestionApiResponse.builder()
+                    .questionNumber(questionEntity.getQuestionNumber())
+                    .question(questionJson.getQuestion())
+                    .build());
+          } catch (JsonProcessingException e) {
+            e.printStackTrace();
+          }
+        });
+    return responses;
   }
 
   private int LCS(char[] X, char[] Y) {

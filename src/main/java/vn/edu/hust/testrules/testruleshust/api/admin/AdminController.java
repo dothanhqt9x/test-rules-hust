@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hust.testrules.testruleshust.api.admin.apirequest.CreateSchoolApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.admin.apirequest.EditSchoolApiRequest;
+import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.AllQuestionApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.SchoolApiResponse;
+import vn.edu.hust.testrules.testruleshust.service.question.QuestionService;
 import vn.edu.hust.testrules.testruleshust.service.school.SchoolService;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.List;
 public class AdminController {
 
   private final SchoolService schoolService;
+  private final QuestionService questionService;
 
   @PostMapping("/createSchool")
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -33,5 +36,12 @@ public class AdminController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void editNameSchool(@RequestBody EditSchoolApiRequest request) {
     schoolService.editSchool(request);
+  }
+
+  @GetMapping("/getListQuestion/{pageNo}/{pageSize}")
+  public List<AllQuestionApiResponse> getListQuestion(
+      @PathVariable Integer pageNo, @PathVariable Integer pageSize) {
+
+    return questionService.getListQuestion(pageNo, pageSize);
   }
 }
