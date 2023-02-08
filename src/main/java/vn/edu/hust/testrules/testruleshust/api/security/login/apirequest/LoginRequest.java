@@ -2,15 +2,19 @@ package vn.edu.hust.testrules.testruleshust.api.security.login.apirequest;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern;
 
 @Getter
 @Builder
 public class LoginRequest {
 
-  @NonNull
+  @Email
+  @Pattern(
+      regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$",
+      message = "Invalid email address")
   private String email;
 
-  @NonNull
   private String password;
 }

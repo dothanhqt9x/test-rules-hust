@@ -18,6 +18,8 @@ import vn.edu.hust.testrules.testruleshust.security.jwt.CustomUserDetails;
 import vn.edu.hust.testrules.testruleshust.security.jwt.JwtTokenProvider;
 import vn.edu.hust.testrules.testruleshust.service.user.UserService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 public class LoginController {
@@ -29,7 +31,7 @@ public class LoginController {
   private final UserService userService;
 
   @PostMapping("/login")
-  public LoginResponse authenticateUser(@RequestBody LoginRequest loginRequest) {
+  public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
     Authentication authentication =
         authenticationManager.authenticate(
