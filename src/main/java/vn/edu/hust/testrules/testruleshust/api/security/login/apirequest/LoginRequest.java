@@ -16,5 +16,6 @@ public class LoginRequest {
       message = "Invalid email address")
   private String email;
 
+  @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "Invalid password")
   private String password;
 }

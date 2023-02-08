@@ -1,19 +1,19 @@
 package vn.edu.hust.testrules.testruleshust.api.security.login;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.LoginRequest;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.RegisterRequest;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apiresponse.LoginResponse;
-import vn.edu.hust.testrules.testruleshust.api.security.login.apiresponse.RandomStuff;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apiresponse.RegisterResponse;
+import vn.edu.hust.testrules.testruleshust.exception.response.ErrorResponse;
 import vn.edu.hust.testrules.testruleshust.security.jwt.CustomUserDetails;
 import vn.edu.hust.testrules.testruleshust.security.jwt.JwtTokenProvider;
 import vn.edu.hust.testrules.testruleshust.service.user.UserService;
@@ -44,19 +44,23 @@ public class LoginController {
     return new LoginResponse(jwt);
   }
 
-  // Api /api/random yêu cầu phải xác thực mới có thể request
-  @GetMapping("/random")
-  public RandomStuff randomStuff() {
-    return new RandomStuff("JWT Hợp lệ mới có thể thấy được message này");
-  }
-
   @PostMapping("/register")
-  public RegisterResponse registerUser(@RequestBody RegisterRequest registerRequest) {
+  public ResponseEntity<Object> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
 
-    if (userService.registerUser(registerRequest) == true) {
-      return RegisterResponse.builder().status("OK").build();
+    if (Boolean.FALSE.equals(validateRequest(registerRequest))) {
+      return ResponseEntity.badRequest()
+          .body(ErrorResponse.builder().result("ng").errorMessage("Invalid gender").build());
     }
 
-    return RegisterResponse.builder().status("NG").build();
+    if (Boolean.TRUE.equals(userService.registerUser(registerRequest))) {
+      return ResponseEntity.ok().body(RegisterResponse.builder().status("OK").build());
+    }
+
+    return ResponseEntity.ok(RegisterResponse.builder().status("NG").build());
+  }
+
+  private Boolean validateRequest(RegisterRequest registerRequest) {
+
+    return "Nam".equals(registerRequest.getGender()) || "Nữ".equals(registerRequest.getGender());
   }
 }
