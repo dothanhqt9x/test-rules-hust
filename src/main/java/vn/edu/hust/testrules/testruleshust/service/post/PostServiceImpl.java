@@ -6,10 +6,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hust.testrules.testruleshust.api.post.apirequest.PostApiRequest;
+import vn.edu.hust.testrules.testruleshust.api.post.apiresponse.PostApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.post.apiresponse.PostDetailApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.post.json.CommentJson;
 import vn.edu.hust.testrules.testruleshust.api.post.json.SubCommentJson;
 import vn.edu.hust.testrules.testruleshust.entity.PostEntity;
+import vn.edu.hust.testrules.testruleshust.entity.UserEntity;
 import vn.edu.hust.testrules.testruleshust.entity.view.PostDetailView;
 import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.repository.PostPagingRepository;
@@ -42,10 +44,36 @@ public class PostServiceImpl implements PostService {
   }
 
   @Override
-  public List<PostEntity> findPaginated(int pageNo, int pageSize) {
+  public List<PostApiResponse> findPaginated(int pageNo, int pageSize) {
+
+    // init list
+    List<PostApiResponse> postApiResponses = new ArrayList<>();
+
+    // get PostEntity
     Pageable paging = PageRequest.of(pageNo, pageSize);
     Page<PostEntity> pagedResult = postPagingRepository.findAll(paging);
-    return pagedResult.toList();
+
+    pagedResult.forEach(
+        postEntity -> {
+          UserEntity user = userRepository.findById(Long.valueOf(postEntity.getUserId())).get();
+
+          String username = user.getName();
+
+          if (Objects.isNull(username)) {
+            username = user.getEmail();
+          }
+
+          postApiResponses.add(
+              PostApiResponse.builder()
+                  .id(postEntity.getId())
+                  .userId(postEntity.getUserId())
+                  .content(postEntity.getContent())
+                  .time(postEntity.getTime())
+                  .username(username)
+                  .build());
+        });
+
+    return postApiResponses;
   }
 
   @Override

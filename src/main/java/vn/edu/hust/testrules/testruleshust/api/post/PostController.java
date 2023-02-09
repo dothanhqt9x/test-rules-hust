@@ -8,14 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import vn.edu.hust.testrules.testruleshust.api.post.apirequest.CommentApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.post.apirequest.PostApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.post.apirequest.SubCommentApiRequest;
+import vn.edu.hust.testrules.testruleshust.api.post.apiresponse.PostApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.post.apiresponse.PostDetailApiResponse;
-import vn.edu.hust.testrules.testruleshust.entity.PostEntity;
 import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.service.comment.CommentService;
 import vn.edu.hust.testrules.testruleshust.service.post.PostService;
 import vn.edu.hust.testrules.testruleshust.service.subcomment.SubCommentService;
 
-import java.net.CacheRequest;
 import java.util.List;
 
 @RestController
@@ -35,7 +34,7 @@ public class PostController {
   }
 
   @GetMapping("/getAllPost/{pageNo}/{pageSize}")
-  public List<PostEntity> getAllPost(@PathVariable Integer pageNo, @PathVariable Integer pageSize) {
+  public List<PostApiResponse> getAllPost(@PathVariable Integer pageNo, @PathVariable Integer pageSize) {
 
     return postService.findPaginated(pageNo, pageSize);
   }

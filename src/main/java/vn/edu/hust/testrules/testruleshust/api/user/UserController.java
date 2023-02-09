@@ -11,6 +11,7 @@ import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetDetailApiResp
 import vn.edu.hust.testrules.testruleshust.service.user.UserService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class UserController {
 
   @PostMapping("/change/password")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void changePassword(@RequestBody ChangePasswordApiRequest request) {
+  public void changePassword(@RequestBody @Valid ChangePasswordApiRequest request) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     userService.changePassword(request, authentication.getName());
   }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Service
 public class S3BucketStorageService {
@@ -32,14 +33,14 @@ public class S3BucketStorageService {
    * @return String
    */
   public String uploadFile(MultipartFile file) {
-    String keyName = file.getOriginalFilename();
+    String keyName = file.getOriginalFilename() + LocalDateTime.now();
     try {
       ObjectMetadata metadata = new ObjectMetadata();
       metadata.setContentLength(file.getSize());
       amazonS3Client.putObject(
           new PutObjectRequest(bucketName, keyName, file.getInputStream(), metadata)
               .withCannedAcl(CannedAccessControlList.PublicRead));
-      return "File uploaded: " + keyName;
+      return keyName;
     } catch (IOException ioe) {
       logger.error("IOException: " + ioe.getMessage());
     } catch (AmazonServiceException serviceException) {
@@ -49,6 +50,6 @@ public class S3BucketStorageService {
       logger.info("AmazonClientException Message: " + clientException.getMessage());
       throw clientException;
     }
-    return "File not uploaded: " + keyName;
+    return null;
   }
 }
