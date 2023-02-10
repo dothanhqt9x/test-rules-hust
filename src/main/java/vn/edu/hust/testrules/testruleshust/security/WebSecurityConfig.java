@@ -65,17 +65,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/getAllPost",
             "/addComment",
             "/addSubComment",
-            "/getPostDetail",
-            "/getListDocument")
+            "/getPostDetail")
         .hasAuthority("01")
         .antMatchers(
-            "/question/create",
-            "/createSchool",
-            "/editSchool",
-            "/getListDocument",
-            "/createDocument",
-            "/editDocument")
-        .hasAuthority("02"); // Tất cả các request khác đều cần phải xác thực mới được truy cập
+            "/question/create", "/createSchool", "/editSchool", "/createDocument", "/editDocument")
+        .hasAuthority("02")
+        .antMatchers("/getListDocument")
+        .hasAnyAuthority(
+            "01", "02"); // Tất cả các request khác đều cần phải xác thực mới được truy cập
 
     // Thêm một lớp Filter kiểm tra jwt
     http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
