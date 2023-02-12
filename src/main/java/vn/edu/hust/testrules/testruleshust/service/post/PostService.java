@@ -14,4 +14,5 @@ public interface PostService {
     void createPost(PostApiRequest request, String email);
     List<PostApiResponse> findPaginated(int pageNo, int pageSize);
     PostDetailApiResponse getPostDetail(Integer postId) throws ServiceException;
+    List<PostApiResponse> searchPost(String key);
 }

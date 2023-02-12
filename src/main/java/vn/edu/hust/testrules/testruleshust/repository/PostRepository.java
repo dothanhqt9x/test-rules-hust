@@ -57,4 +57,9 @@ public interface PostRepository extends JpaRepository<PostEntity, Integer> {
               + "LEFT JOIN sub_comment sc ON sc.comment_id = c.id\n"
               + "WHERE p.id = :postId")
   List<PostDetailView> getPostJson(@Param("postId") Integer id);
+
+  @Query(
+      nativeQuery = true,
+      value = "SELECT * FROM post WHERE MATCH(content) AGAINST ( :key IN BOOLEAN MODE)")
+  List<PostEntity> searchPost(@Param("key") String key);
 }

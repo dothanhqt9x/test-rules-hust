@@ -65,7 +65,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/getAllPost",
             "/addComment",
             "/addSubComment",
-            "/getPostDetail")
+            "/getPostDetail",
+            "/searchPost")
         .hasAuthority("01")
         .antMatchers(
             "/question/create", "/createSchool", "/editSchool", "/createDocument", "/editDocument")

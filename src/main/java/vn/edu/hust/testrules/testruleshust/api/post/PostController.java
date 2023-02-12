@@ -59,4 +59,9 @@ public class PostController {
       throws ServiceException {
     return postService.getPostDetail(postId);
   }
+
+  @GetMapping("/searchPost")
+  public List<PostApiResponse> searchPost(@RequestParam("key") String key) {
+    return postService.searchPost(key);
+  }
 }

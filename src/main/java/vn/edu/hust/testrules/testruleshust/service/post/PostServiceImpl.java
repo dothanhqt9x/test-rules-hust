@@ -150,4 +150,20 @@ public class PostServiceImpl implements PostService {
         .comment(commentJsons)
         .build();
   }
+
+  @Override
+  public List<PostApiResponse> searchPost(String key) {
+
+    // init
+    List<PostApiResponse> postApiResponses = new ArrayList<>();
+
+    List<PostEntity> postEntities = postRepository.searchPost(key);
+
+    postEntities.forEach(
+        postEntity -> {
+          postApiResponses.add(PostApiResponse.builder().content(postEntity.getContent()).build());
+        });
+
+    return postApiResponses;
+  }
 }
