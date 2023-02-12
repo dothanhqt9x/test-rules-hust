@@ -66,14 +66,14 @@ public class QuestionPostController {
     }
   }
 
-  @GetMapping("get_history_list")
+  @GetMapping("/get_history_list")
   public List<HistoryApiResponse> getListHistory() {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     return questionService.getListHistory(authentication.getName());
   }
 
-  @GetMapping("get_history_details")
+  @GetMapping("/get_history_details")
   public List<HistoryJson> getHistoryDetails(@RequestParam(name = "id") Integer id)
       throws JsonProcessingException, JSONException, ServiceException {
 

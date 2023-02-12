@@ -315,11 +315,29 @@ public class QuestionServiceImpl implements QuestionService {
             QuestionJson questionJson =
                 objectMapper.readValue(questionEntity.getQuestionJson(), QuestionJson.class);
 
+            String[] strings =
+                questionEntity
+                    .getAnswer()
+                    .replace("[", "")
+                    .replace("]", "")
+                    .replaceAll("\\s+", "")
+                    .split(",");
+            Integer[] numbers = new Integer[strings.length];
+            for (int i = 0; i < numbers.length; i++) {
+              try {
+                numbers[i] = Integer.parseInt(strings[i]);
+              } catch (NumberFormatException nfe) {
+                numbers[i] = null;
+              }
+            }
+
             // build response
             responses.add(
                 AllQuestionApiResponse.builder()
                     .questionNumber(questionEntity.getQuestionNumber())
                     .question(questionJson.getQuestion())
+                    .answer(questionJson.getAnswer())
+                    .key(Arrays.stream(numbers).toList())
                     .build());
           } catch (JsonProcessingException e) {
             e.printStackTrace();

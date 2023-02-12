@@ -60,7 +60,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/get_history_details",
             "/question/all",
             "/question/submit",
-            "/getListQuestion",
             "/create/post",
             "/getAllPost",
             "/addComment",
@@ -69,7 +68,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/searchPost")
         .hasAuthority("01")
         .antMatchers(
-            "/question/create", "/createSchool", "/editSchool", "/createDocument", "/editDocument")
+            "/question/create",
+            "/createSchool",
+            "/editSchool",
+            "/createDocument",
+            "/editDocument",
+            "/getListQuestion")
         .hasAuthority("02")
         .antMatchers("/getListDocument")
         .hasAnyAuthority(
