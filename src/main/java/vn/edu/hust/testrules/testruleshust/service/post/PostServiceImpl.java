@@ -13,6 +13,7 @@ import vn.edu.hust.testrules.testruleshust.api.post.json.SubCommentJson;
 import vn.edu.hust.testrules.testruleshust.entity.PostEntity;
 import vn.edu.hust.testrules.testruleshust.entity.UserEntity;
 import vn.edu.hust.testrules.testruleshust.entity.view.PostDetailView;
+import vn.edu.hust.testrules.testruleshust.entity.view.PostSearchView;
 import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.repository.PostPagingRepository;
 import vn.edu.hust.testrules.testruleshust.repository.PostRepository;
@@ -157,11 +158,18 @@ public class PostServiceImpl implements PostService {
     // init
     List<PostApiResponse> postApiResponses = new ArrayList<>();
 
-    List<PostEntity> postEntities = postRepository.searchPost(key);
+    List<PostSearchView> postEntities = postRepository.searchPost(key);
 
     postEntities.forEach(
         postEntity -> {
-          postApiResponses.add(PostApiResponse.builder().content(postEntity.getContent()).build());
+          postApiResponses.add(
+              PostApiResponse.builder()
+                  .id(postEntity.getPostId())
+                  .username(postEntity.getPostName())
+                  .content(postEntity.getPostContent())
+                  .time(postEntity.getPostTime())
+                  .userId(postEntity.getUserId())
+                  .build());
         });
 
     return postApiResponses;

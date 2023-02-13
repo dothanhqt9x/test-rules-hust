@@ -21,4 +21,5 @@ public class UserEntity {
   private String address;
   private Integer school;
   private String gender;
+  private String avatar;
 }

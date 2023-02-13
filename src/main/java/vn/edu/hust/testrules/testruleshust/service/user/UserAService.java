@@ -3,6 +3,7 @@ package vn.edu.hust.testrules.testruleshust.service.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.RegisterRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.ChangePasswordApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.EditUserApiRequest;
@@ -11,6 +12,9 @@ import vn.edu.hust.testrules.testruleshust.entity.SchoolEntity;
 import vn.edu.hust.testrules.testruleshust.entity.UserEntity;
 import vn.edu.hust.testrules.testruleshust.repository.SchoolRepository;
 import vn.edu.hust.testrules.testruleshust.repository.UserRepository;
+import vn.edu.hust.testrules.testruleshust.service.aws.S3BucketStorageService;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +23,7 @@ public class UserAService implements UserService {
   private final UserRepository userRepository;
   private final SchoolRepository schoolRepository;
   private final PasswordEncoder passwordEncoder;
+  private final S3BucketStorageService service;
 
   @Override
   public Boolean registerUser(RegisterRequest registerRequest) {
@@ -75,6 +80,22 @@ public class UserAService implements UserService {
   public void changePassword(ChangePasswordApiRequest request, String email) {
     UserEntity user = userRepository.findUserEntityByEmail(email);
     user.setPassword(passwordEncoder.encode(request.getPassword()));
+    userRepository.save(user);
+  }
+
+  @Override
+  public void uploadAvatar(MultipartFile file, String email) {
+
+    String fileName = service.uploadFile(file);
+
+    if (Objects.isNull(fileName)) {
+      System.out.println("Update file failed");
+    }
+
+    UserEntity user = userRepository.findUserEntityByEmail(email);
+
+    user.setAvatar("https://test-rules-hust.s3.ap-northeast-1.amazonaws.com/" + fileName);
+
     userRepository.save(user);
   }
 }

@@ -69,11 +69,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .hasAuthority("01")
         .antMatchers(
             "/question/create",
+            "/getListQuestion/**",
             "/createSchool",
             "/editSchool",
             "/createDocument",
-            "/editDocument",
-            "/getListQuestion")
+            "/editDocument")
         .hasAuthority("02")
         .antMatchers("/getListDocument")
         .hasAnyAuthority(

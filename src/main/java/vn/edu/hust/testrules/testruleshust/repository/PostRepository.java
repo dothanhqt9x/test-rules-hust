@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vn.edu.hust.testrules.testruleshust.entity.PostEntity;
 import vn.edu.hust.testrules.testruleshust.entity.view.PostDetailView;
+import vn.edu.hust.testrules.testruleshust.entity.view.PostSearchView;
 import vn.edu.hust.testrules.testruleshust.entity.view.PostViewEntity;
 
 import java.util.List;
@@ -60,6 +61,9 @@ public interface PostRepository extends JpaRepository<PostEntity, Integer> {
 
   @Query(
       nativeQuery = true,
-      value = "SELECT * FROM post WHERE MATCH(content) AGAINST ( :key IN BOOLEAN MODE)")
-  List<PostEntity> searchPost(@Param("key") String key);
+      value =
+          "SELECT post.user_id AS userId, post.id AS postId, (SELECT user.email FROM user WHERE user.id = post.user_id) AS postName , post.content AS postContent , post.`time` AS postTime, MATCH(content) AGAINST (:key IN BOOLEAN MODE) AS relevance\n"
+              + "FROM post\n"
+              + "ORDER BY relevance DESC limit 5")
+  List<PostSearchView> searchPost(@Param("key") String key);
 }
