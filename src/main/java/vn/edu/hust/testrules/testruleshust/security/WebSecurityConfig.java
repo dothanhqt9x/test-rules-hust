@@ -65,7 +65,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/addComment",
             "/addSubComment",
             "/getPostDetail",
-            "/searchPost")
+            "/searchPost",
+            "/uploadAvatar")
         .hasAuthority("01")
         .antMatchers(
             "/question/create",
