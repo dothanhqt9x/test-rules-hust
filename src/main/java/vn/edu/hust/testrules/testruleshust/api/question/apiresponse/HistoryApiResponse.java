@@ -1,4 +1,4 @@
-package vn.edu.hust.testrules.testruleshust.api.question.post.apiresponse;
+package vn.edu.hust.testrules.testruleshust.api.question.apiresponse;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package vn.edu.hust.testrules.testruleshust.api.question.get.apiresponse;
+package vn.edu.hust.testrules.testruleshust.api.question.apiresponse;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class QuestionApiResponse {
+public class QuestionGetAllApiResponse {
 
   private String question;
   private List<String> answer;
