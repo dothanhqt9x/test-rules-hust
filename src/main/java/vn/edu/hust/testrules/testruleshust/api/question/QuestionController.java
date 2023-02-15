@@ -14,6 +14,7 @@ import vn.edu.hust.testrules.testruleshust.api.question.apirequest.SubmitQuestio
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.HistoryApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.QuestionApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.QuestionGetAllApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.UserMaxScoreApiResponse;
 import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.service.question.QuestionService;
 import vn.edu.hust.testrules.testruleshust.service.question.json.HistoryJson;
@@ -27,74 +28,80 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QuestionController {
 
-    private final QuestionService questionService;
-    private final ObjectMapper objectMapper;
+  private final QuestionService questionService;
+  private final ObjectMapper objectMapper;
 
-    @PostMapping("/question/create")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void createQuestion(
-            @RequestParam("question") String requestFromApi,
-            @RequestParam(name = "file", required = false) MultipartFile file)
-            throws JsonProcessingException, ServiceException {
-        QuestionPostApiRequest request =
-                objectMapper.readValue(requestFromApi, QuestionPostApiRequest.class);
-        QuestionServiceRequest questionServiceRequest =
-                QuestionServiceRequest.builder()
-                        .question(request.getQuestion())
-                        .answer(request.getAnswer())
-                        .key(request.getKey())
-                        .image(file)
-                        .build();
-        questionService.insertNewQuestion(questionServiceRequest);
+  @PostMapping("/question/create")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void createQuestion(
+      @RequestParam("question") String requestFromApi,
+      @RequestParam(name = "file", required = false) MultipartFile file)
+      throws JsonProcessingException, ServiceException {
+    QuestionPostApiRequest request =
+        objectMapper.readValue(requestFromApi, QuestionPostApiRequest.class);
+    QuestionServiceRequest questionServiceRequest =
+        QuestionServiceRequest.builder()
+            .question(request.getQuestion())
+            .answer(request.getAnswer())
+            .key(request.getKey())
+            .image(file)
+            .build();
+    questionService.insertNewQuestion(questionServiceRequest);
+  }
+
+  @PostMapping("/question/createAll")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void createAllQuestion() {
+    try {
+      questionService.insertAllQuestion();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+  }
 
-    @PostMapping("/question/createAll")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void createAllQuestion() {
-        try {
-            questionService.insertAllQuestion();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+  @PostMapping("/question/submit")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void submitQuestion(@RequestBody List<SubmitQuestionApiRequest> requests) {
+    try {
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      questionService.submitQuestion(requests, authentication.getName());
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
     }
+  }
 
-    @PostMapping("/question/submit")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void submitQuestion(@RequestBody List<SubmitQuestionApiRequest> requests) {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            questionService.submitQuestion(requests, authentication.getName());
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-    }
+  @GetMapping("/get_history_list")
+  public List<HistoryApiResponse> getListHistory() {
 
-    @GetMapping("/get_history_list")
-    public List<HistoryApiResponse> getListHistory() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return questionService.getListHistory(authentication.getName());
+  }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return questionService.getListHistory(authentication.getName());
-    }
+  @GetMapping("/get_history_details")
+  public List<HistoryJson> getHistoryDetails(@RequestParam(name = "id") Integer id)
+      throws JsonProcessingException, JSONException, ServiceException {
 
-    @GetMapping("/get_history_details")
-    public List<HistoryJson> getHistoryDetails(@RequestParam(name = "id") Integer id)
-            throws JsonProcessingException, JSONException, ServiceException {
+    return questionService.getHistoryDetails(id);
+  }
 
-        return questionService.getHistoryDetails(id);
-    }
+  @GetMapping("/question")
+  public QuestionApiResponse getOnlyQuestion() throws JsonProcessingException {
+    QuestionServiceResponse questionServiceResponse = questionService.getOneQuestion();
+    return QuestionApiResponse.builder()
+        .question(questionServiceResponse.getQuestion())
+        .answer(questionServiceResponse.getAnswer())
+        .key(questionServiceResponse.getKey())
+        .build();
+  }
 
-    @GetMapping("/question")
-    public QuestionApiResponse getOnlyQuestion() throws JsonProcessingException {
-        QuestionServiceResponse questionServiceResponse = questionService.getOneQuestion();
-        return QuestionApiResponse.builder()
-                .question(questionServiceResponse.getQuestion())
-                .answer(questionServiceResponse.getAnswer())
-                .key(questionServiceResponse.getKey())
-                .build();
-    }
+  @GetMapping("/question/all")
+  List<QuestionGetAllApiResponse> getAllQuestion(@RequestParam("size") Integer size) {
+    return questionService.getAllQuestion(size);
+  }
 
-    @GetMapping("/question/all")
-    List<QuestionGetAllApiResponse> getAllQuestion() {
-        return questionService.getAllQuestion();
-    }
+  @PostMapping("/question/submitForApp")
+  public List<UserMaxScoreApiResponse> submitQuestionForApp(@RequestParam("score") Integer score) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return questionService.submitQuestionForApp(authentication.getName(), score);
+  }
 }

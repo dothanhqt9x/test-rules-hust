@@ -17,8 +17,10 @@ import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.AllQuestionApiR
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.QuestionGetAllApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.apirequest.SubmitQuestionApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.HistoryApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.UserMaxScoreApiResponse;
 import vn.edu.hust.testrules.testruleshust.entity.HistoryEntity;
 import vn.edu.hust.testrules.testruleshust.entity.QuestionEntity;
+import vn.edu.hust.testrules.testruleshust.entity.UserEntity;
 import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.repository.*;
 import vn.edu.hust.testrules.testruleshust.service.aws.S3BucketStorageService;
@@ -105,14 +107,20 @@ public class QuestionServiceImpl implements QuestionService {
     entity.setType("01");
     entity.setQuestionJson(questionJson);
     entity.setAnswer(request.getKey().toString());
+    entity.setQuestionNumber(questionEntities.size() + 1);
     questionRepository.save(entity);
   }
 
   @Override
-  public List<QuestionGetAllApiResponse> getAllQuestion() {
+  public List<QuestionGetAllApiResponse> getAllQuestion(Integer size) {
+
     List<QuestionGetAllApiResponse> questionGetAllApiResponseList = new ArrayList<>();
     List<QuestionEntity> questionEntities = questionRepository.findAll();
-    for (int k = 0; k < 20; k++) {
+
+    // generate random set
+    Set<Integer> randomNumbers = createSetRandomNumber(size, questionEntities.size());
+
+    for (int k : randomNumbers) {
       QuestionEntity questionEntity = questionEntities.get(k);
       try {
         QuestionJson question =
@@ -137,6 +145,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .question(question.getQuestion())
                 .answer(question.getAnswer())
                 .key(Arrays.stream(numbers).toList())
+                .questionNumber(questionEntity.getQuestionNumber())
                 .build());
       } catch (JsonProcessingException e) {
         e.printStackTrace();
@@ -345,6 +354,31 @@ public class QuestionServiceImpl implements QuestionService {
     return responses;
   }
 
+  @Override
+  public List<UserMaxScoreApiResponse> submitQuestionForApp(String email, Integer score) {
+
+    // ini array
+    List<UserMaxScoreApiResponse> userMaxScoreApiResponses = new ArrayList<>();
+
+    UserEntity user = userRepository.findUserEntityByEmail(email);
+    user.setScore(user.getScore() + score);
+    userRepository.save(user);
+
+    List<UserEntity> userEntities = userRepository.getUsersOrderAndLimit();
+
+    userEntities.forEach(
+        userEntity ->
+            userMaxScoreApiResponses.add(
+                UserMaxScoreApiResponse.builder()
+                    .username(userEntity.getName())
+                    .email(userEntity.getEmail())
+                    .avatar(userEntity.getAvatar())
+                    .score(userEntity.getScore())
+                    .build()));
+
+    return userMaxScoreApiResponses;
+  }
+
   private int LCS(char[] X, char[] Y) {
     int m = X.length;
     int n = Y.length;
@@ -482,5 +516,27 @@ public class QuestionServiceImpl implements QuestionService {
     graphics2D.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
     graphics2D.dispose();
     return resizedImage;
+  }
+
+  /**
+   * Create 1 set random number
+   *
+   * @param sizeSet number of questions
+   * @param countQuestion total number of questions in the database
+   * @return Set<Integer>
+   */
+  private Set<Integer> createSetRandomNumber(Integer sizeSet, Integer countQuestion) {
+
+    // init set
+    Set<Integer> set = new HashSet<>();
+
+    Random random = new Random();
+
+    while (set.size() < sizeSet) {
+      int num = random.nextInt(countQuestion + 1);
+      set.add(num);
+    }
+
+    return set;
   }
 }

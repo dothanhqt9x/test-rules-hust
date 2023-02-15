@@ -60,7 +60,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     if (!request.getFile().isEmpty()) {
       String fileName = service.uploadFile(request.getFile());
-      documentEntity.setLink(fileName);
+      documentEntity.setLink("https://test-rules-hust.s3.ap-northeast-1.amazonaws.com/" + fileName);
     }
 
     documentEntity.setName(request.getName());

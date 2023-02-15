@@ -9,6 +9,7 @@ import java.util.List;
 @Builder
 public class QuestionGetAllApiResponse {
 
+  private Integer questionNumber;
   private String question;
   private List<String> answer;
   private List<Integer> key;

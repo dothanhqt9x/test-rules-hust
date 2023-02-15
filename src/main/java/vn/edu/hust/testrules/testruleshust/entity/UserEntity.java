@@ -22,4 +22,5 @@ public class UserEntity {
   private Integer school;
   private String gender;
   private String avatar;
+  private Integer score;
 }
