@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.AllQuestionApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.DashboardApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.HistoryForGetListApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.QuestionGetAllApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.apirequest.SubmitQuestionApiRequest;
@@ -43,6 +44,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -417,6 +419,19 @@ public class QuestionServiceImpl implements QuestionService {
                     .build()));
 
     return historyForGetListApiResponses;
+  }
+
+  @Override
+  public DashboardApiResponse getDashboard() {
+
+    int[] arr = new int[21];
+
+    List<HistoryEntity> historyEntities = historyRepository.findAll();
+    historyEntities.forEach(historyEntity -> {
+      arr[historyEntity.getScore()] ++;
+    });
+
+    return DashboardApiResponse.builder().quantityOfScore(Arrays.stream(arr).boxed().toList()).build();
   }
 
   private int LCS(char[] X, char[] Y) {

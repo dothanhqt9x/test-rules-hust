@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.edu.hust.testrules.testruleshust.api.admin.apirequest.CreateSchoolApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.admin.apirequest.EditSchoolApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.AllQuestionApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.DashboardApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.HistoryForGetListApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.SchoolApiResponse;
 import vn.edu.hust.testrules.testruleshust.service.question.QuestionService;
@@ -59,5 +60,11 @@ public class AdminController {
       @RequestParam("min") Integer min, @RequestParam("max") Integer max) {
 
     return questionService.getListHistoryFilter(min, max);
+  }
+
+  @GetMapping("/getDashboard")
+  public DashboardApiResponse getDashboard() {
+
+    return questionService.getDashboard();
   }
 }
