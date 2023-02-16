@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.AllQuestionApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.HistoryForGetListApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.QuestionGetAllApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.apirequest.SubmitQuestionApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.HistoryApiResponse;
@@ -21,6 +22,7 @@ import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.UserMaxScore
 import vn.edu.hust.testrules.testruleshust.entity.HistoryEntity;
 import vn.edu.hust.testrules.testruleshust.entity.QuestionEntity;
 import vn.edu.hust.testrules.testruleshust.entity.UserEntity;
+import vn.edu.hust.testrules.testruleshust.entity.view.HistoryView;
 import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.repository.*;
 import vn.edu.hust.testrules.testruleshust.service.aws.S3BucketStorageService;
@@ -377,6 +379,44 @@ public class QuestionServiceImpl implements QuestionService {
                     .build()));
 
     return userMaxScoreApiResponses;
+  }
+
+  @Override
+  public List<HistoryForGetListApiResponse> getListHistoryByMSSV(Integer mssv) {
+
+    List<HistoryForGetListApiResponse> historyForGetListApiResponses = new ArrayList<>();
+
+    List<HistoryView> historyViews = historyRepository.getListHistoryByMSSV(mssv);
+
+    historyViews.forEach(
+        historyView ->
+            historyForGetListApiResponses.add(
+                HistoryForGetListApiResponse.builder()
+                    .id(historyView.getHistoryId())
+                    .mssv(historyView.getMssv())
+                    .name(historyView.getTime())
+                    .build()));
+
+    return historyForGetListApiResponses;
+  }
+
+  @Override
+  public List<HistoryForGetListApiResponse> getListHistoryFilter(Integer min, Integer max) {
+
+    List<HistoryForGetListApiResponse> historyForGetListApiResponses = new ArrayList<>();
+
+    List<HistoryView> historyViews = historyRepository.getListHistoryFilter(min, max);
+
+    historyViews.forEach(
+        historyView ->
+            historyForGetListApiResponses.add(
+                HistoryForGetListApiResponse.builder()
+                    .id(historyView.getHistoryId())
+                    .mssv(historyView.getMssv())
+                    .name(historyView.getTime())
+                    .build()));
+
+    return historyForGetListApiResponses;
   }
 
   private int LCS(char[] X, char[] Y) {

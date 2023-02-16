@@ -75,7 +75,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/createSchool",
             "/editSchool",
             "/createDocument",
-            "/editDocument")
+            "/editDocument",
+            "/getListHistoryFilter",
+            "/getListHistorySearch")
         .hasAuthority("02")
         .antMatchers("/getListDocument")
         .hasAnyAuthority(

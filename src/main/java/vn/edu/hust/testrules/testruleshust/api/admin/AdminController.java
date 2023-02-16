@@ -6,11 +6,13 @@ import org.springframework.web.bind.annotation.*;
 import vn.edu.hust.testrules.testruleshust.api.admin.apirequest.CreateSchoolApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.admin.apirequest.EditSchoolApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.AllQuestionApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.HistoryForGetListApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.SchoolApiResponse;
 import vn.edu.hust.testrules.testruleshust.service.question.QuestionService;
 import vn.edu.hust.testrules.testruleshust.service.school.SchoolService;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,5 +45,19 @@ public class AdminController {
       @PathVariable Integer pageNo, @PathVariable Integer pageSize) {
 
     return questionService.getListQuestion(pageNo, pageSize);
+  }
+
+  @GetMapping("/getListHistorySearch")
+  public List<HistoryForGetListApiResponse> getListHistoryByEmail(
+      @RequestParam("search") Integer mssv) {
+
+    return questionService.getListHistoryByMSSV(mssv);
+  }
+
+  @GetMapping("/getListHistoryFilter")
+  public List<HistoryForGetListApiResponse> getListHistoryFilter(
+      @RequestParam("min") Integer min, @RequestParam("max") Integer max) {
+
+    return questionService.getListHistoryFilter(min, max);
   }
 }

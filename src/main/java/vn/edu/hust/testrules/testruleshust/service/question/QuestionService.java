@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONException;
 import org.springframework.stereotype.Service;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.AllQuestionApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.HistoryForGetListApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.QuestionGetAllApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.apirequest.SubmitQuestionApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.HistoryApiResponse;
@@ -28,4 +29,6 @@ public interface QuestionService {
     List<HistoryJson> getHistoryDetails(Integer historyId) throws JsonProcessingException, JSONException, ServiceException;
     List<AllQuestionApiResponse> getListQuestion(int pageNo, int pageSize);
     List<UserMaxScoreApiResponse> submitQuestionForApp(String email, Integer score);
+    List<HistoryForGetListApiResponse> getListHistoryByMSSV(Integer mssv);
+    List<HistoryForGetListApiResponse> getListHistoryFilter(Integer min, Integer max);
 }
