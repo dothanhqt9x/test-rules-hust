@@ -8,6 +8,8 @@ import lombok.Getter;
 public class HistoryForGetListApiResponse {
 
   private final Integer id;
-  private final String name;
+  private final String time;
   private final Integer mssv;
+  private final String name;
+  private final Integer score;
 }

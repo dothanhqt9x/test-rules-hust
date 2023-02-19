@@ -2,6 +2,7 @@ package vn.edu.hust.testrules.testruleshust.api.document;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.entity.DocumentEntity;
@@ -33,11 +34,24 @@ public class DocumentController {
 
   @PostMapping("/editDocument/{documentId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void editDucument(
-          @RequestParam("name") String name,
-          @RequestParam(name = "file", required = false) MultipartFile file,
-          @PathVariable Integer documentId) {
+  public void editDocument(
+      @RequestParam("name") String name,
+      @RequestParam(name = "file", required = false) MultipartFile file,
+      @PathVariable Integer documentId) {
 
-    documentService.editDocument(DocumentServiceRequest.builder().name(name).file(file).build(), documentId);
+    documentService.editDocument(
+        DocumentServiceRequest.builder().name(name).file(file).build(), documentId);
+  }
+
+  @PostMapping("/deleteDocument/{documentId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public ResponseEntity<String> deleteDocument(@PathVariable Integer documentId) {
+
+    Boolean isDelete = documentService.deleteDocumentById(documentId);
+    if (isDelete) {
+      return ResponseEntity.ok().body("OK");
+    }
+
+    return ResponseEntity.badRequest().body("NG");
   }
 }

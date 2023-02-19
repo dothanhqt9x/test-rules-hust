@@ -69,4 +69,18 @@ public class DocumentServiceImpl implements DocumentService {
 
     documentRepository.save(documentEntity);
   }
+
+  @Override
+  public Boolean deleteDocumentById(Integer documentId) {
+
+    DocumentEntity documentEntity = documentRepository.findDocumentEntityById(documentId);
+
+    if (Objects.isNull(documentEntity)) {
+      return Boolean.FALSE;
+    }
+
+    documentRepository.delete(documentEntity);
+
+    return Boolean.TRUE;
+  }
 }

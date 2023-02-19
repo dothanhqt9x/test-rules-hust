@@ -12,4 +12,5 @@ public interface DocumentService {
     List<DocumentEntity> getListDocument();
     void createDocument(DocumentServiceRequest request);
     void editDocument(DocumentServiceRequest request, Integer documentId);
+    Boolean deleteDocumentById(Integer documentId);
 }
