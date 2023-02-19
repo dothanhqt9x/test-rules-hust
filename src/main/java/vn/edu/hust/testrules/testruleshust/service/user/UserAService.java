@@ -65,6 +65,7 @@ public class UserAService implements UserService {
         .address(user.getAddress())
         .school(schoolEntity.getName())
         .gender(user.getGender())
+        .avatar(user.getAvatar())
         .build();
   }
 

@@ -14,4 +14,5 @@ public class GetDetailApiResponse {
     private final String school;
     private final String address;
     private final String gender;
+    private final String avatar;
 }
