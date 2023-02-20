@@ -86,6 +86,7 @@ public class PostServiceImpl implements PostService {
     LocalDateTime postTime = postDetailViews.get(0).getPostTime();
     String postName = postDetailViews.get(0).getPostName();
     String postContent = postDetailViews.get(0).getPostContent();
+    String avatar = postDetailViews.get(0).getAvatarPost();
 
     // comment
     List<CommentJson> commentJsons = new ArrayList<>();
@@ -145,6 +146,7 @@ public class PostServiceImpl implements PostService {
 
     return PostDetailApiResponse.builder()
         .postId(postId)
+        .avatar(avatar)
         .email(postName)
         .time(postTime)
         .content(postContent)

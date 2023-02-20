@@ -16,13 +16,13 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
 
   @Query(
       value =
-          "select h.id as historyId, h.time_test_at as time, u.mssv as mssv from history h inner join `user` u on u.id = h.user_id where u.mssv = :mssv",
+          "select (select COALESCE(user.name, user.email) from user where user.id = h.user_id) as name,h.score as score,h.id as historyId, h.time_test_at as time, u.mssv as mssv from history h inner join `user` u on u.id = h.user_id where u.mssv = :mssv",
       nativeQuery = true)
   List<HistoryView> getListHistoryByMSSV(@Param("mssv") Integer mssv);
 
   @Query(
       value =
-          "select h.id as historyId, h.time_test_at as time, u.mssv as mssv from history h inner join `user` u on u.id = h.user_id where h.score between :min and :max ",
+          "select (select COALESCE(user.name, user.email) from user where user.id = h.user_id) as name,h.score as score,h.id as historyId, h.time_test_at as time, u.mssv as mssv from history h inner join `user` u on u.id = h.user_id where h.score between :min and :max ",
       nativeQuery = true)
   List<HistoryView> getListHistoryFilter(@Param("min") Integer min, @Param("max") Integer max);
 }

@@ -6,6 +6,8 @@ public interface PostDetailView {
 
   Integer getPostId();
 
+  String getAvatarPost();
+
   String getPostName();
 
   String getPostContent();

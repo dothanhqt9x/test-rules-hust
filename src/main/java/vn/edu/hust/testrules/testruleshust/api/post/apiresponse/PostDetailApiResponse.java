@@ -15,6 +15,8 @@ public class PostDetailApiResponse {
   @JsonProperty("post_id")
   private final Integer postId;
 
+  private final String avatar;
+
   private final String email;
   private final LocalDateTime time;
   private final String content;

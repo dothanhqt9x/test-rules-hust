@@ -396,7 +396,9 @@ public class QuestionServiceImpl implements QuestionService {
                 HistoryForGetListApiResponse.builder()
                     .id(historyView.getHistoryId())
                     .mssv(historyView.getMssv())
-                    .name(historyView.getTime())
+                    .name(historyView.getName())
+                    .time(historyView.getTime())
+                    .score(historyView.getScore())
                     .build()));
 
     return historyForGetListApiResponses;
@@ -415,7 +417,9 @@ public class QuestionServiceImpl implements QuestionService {
                 HistoryForGetListApiResponse.builder()
                     .id(historyView.getHistoryId())
                     .mssv(historyView.getMssv())
-                    .name(historyView.getTime())
+                    .name(historyView.getName())
+                    .score(historyView.getScore())
+                    .time(historyView.getTime())
                     .build()));
 
     return historyForGetListApiResponses;
@@ -427,11 +431,14 @@ public class QuestionServiceImpl implements QuestionService {
     int[] arr = new int[21];
 
     List<HistoryEntity> historyEntities = historyRepository.findAll();
-    historyEntities.forEach(historyEntity -> {
-      arr[historyEntity.getScore()] ++;
-    });
+    historyEntities.forEach(
+        historyEntity -> {
+          arr[historyEntity.getScore()]++;
+        });
 
-    return DashboardApiResponse.builder().quantityOfScore(Arrays.stream(arr).boxed().toList()).build();
+    return DashboardApiResponse.builder()
+        .quantityOfScore(Arrays.stream(arr).boxed().toList())
+        .build();
   }
 
   private int LCS(char[] X, char[] Y) {

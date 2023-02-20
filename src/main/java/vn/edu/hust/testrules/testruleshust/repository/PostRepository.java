@@ -43,14 +43,14 @@ public interface PostRepository extends JpaRepository<PostEntity, Integer> {
   @Query(
       nativeQuery = true,
       value =
-          "SELECT p.id AS postId,\n"
-              + "  (SELECT user.email\n"
+          "SELECT (select user.avatar from user where user.id = p.user_id) AS avatarPost, p.id AS postId,\n"
+              + "  (SELECT COALESCE(user.name, user.email)\n"
               + "   FROM user\n"
               + "   WHERE user.id = p.user_id) AS postName,\n"
-              + "p.content AS postContent, p.time as postTime, c.id as commentId, (SELECT user.email\n"
+              + "p.content AS postContent, p.time as postTime, c.id as commentId, (SELECT COALESCE(user.name, user.email)\n"
               + "   FROM user\n"
               + "   WHERE user.id = c.user_id) as commentName, c.time as commentTime, c.content as commentContent,\n"
-              + "   (SELECT user.email\n"
+              + "   (SELECT COALESCE(user.name, user.email)\n"
               + "   FROM user\n"
               + "   WHERE user.id = sc.user_id) as subCommentName, sc.time as subCommentTime, sc.content as subCommentContent\n"
               + "FROM post p\n"
