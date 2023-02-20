@@ -27,6 +27,10 @@ public class CustomUserDetails implements UserDetails {
       return Collections.singleton(new SimpleGrantedAuthority("02"));
     }
 
+    if ("03".equals(user.getRole())) {
+      return Collections.singleton(new SimpleGrantedAuthority("03"));
+    }
+
     return null;
   }
 

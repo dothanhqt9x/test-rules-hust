@@ -13,7 +13,6 @@ import vn.edu.hust.testrules.testruleshust.service.question.QuestionService;
 import vn.edu.hust.testrules.testruleshust.service.school.SchoolService;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor

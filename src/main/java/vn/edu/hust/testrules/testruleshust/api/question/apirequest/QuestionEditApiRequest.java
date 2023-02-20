@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class QuestionPostApiRequest {
+public class QuestionEditApiRequest {
 
   private String question;
   private List<String> answer;

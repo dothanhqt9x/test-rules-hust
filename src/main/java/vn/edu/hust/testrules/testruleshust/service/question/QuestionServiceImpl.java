@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.AllQuestionApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.DashboardApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.HistoryForGetListApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.question.apirequest.QuestionEditApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.QuestionGetAllApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.apirequest.SubmitQuestionApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.HistoryApiResponse;
@@ -44,7 +45,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -439,6 +439,28 @@ public class QuestionServiceImpl implements QuestionService {
     return DashboardApiResponse.builder()
         .quantityOfScore(Arrays.stream(arr).boxed().toList())
         .build();
+  }
+
+  @Override
+  public void editQuestion(QuestionEditApiRequest request, Integer questionNumber) throws JsonProcessingException, ServiceException {
+
+    QuestionEntity questionEntity = questionRepository.findByQuestionNumber(questionNumber);
+
+    String questionRequest = convertToTextStandard(request.getQuestion(), request.getAnswer());
+    List<QuestionEntity> questionEntities = questionRepository.findAll();
+
+    checkText(questionEntities, questionRequest);
+
+    String questionJson =
+        objectMapper.writeValueAsString(
+            QuestionJson.builder()
+                .question(request.getQuestion())
+                .answer(request.getAnswer())
+                .build());
+    questionEntity.setQuestionJson(questionJson);
+    questionEntity.setAnswer(request.getKey().toString());
+
+    questionRepository.save(questionEntity);
   }
 
   private int LCS(char[] X, char[] Y) {

@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import vn.edu.hust.testrules.testruleshust.api.question.apirequest.QuestionPostApiRequest;
+import vn.edu.hust.testrules.testruleshust.api.question.apirequest.QuestionEditApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.question.apirequest.SubmitQuestionApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.HistoryApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.QuestionApiResponse;
@@ -37,8 +37,8 @@ public class QuestionController {
       @RequestParam("question") String requestFromApi,
       @RequestParam(name = "file", required = false) MultipartFile file)
       throws JsonProcessingException, ServiceException {
-    QuestionPostApiRequest request =
-        objectMapper.readValue(requestFromApi, QuestionPostApiRequest.class);
+    QuestionEditApiRequest request =
+        objectMapper.readValue(requestFromApi, QuestionEditApiRequest.class);
     QuestionServiceRequest questionServiceRequest =
         QuestionServiceRequest.builder()
             .question(request.getQuestion())
@@ -103,5 +103,11 @@ public class QuestionController {
   public List<UserMaxScoreApiResponse> submitQuestionForApp(@RequestParam("score") Integer score) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     return questionService.submitQuestionForApp(authentication.getName(), score);
+  }
+
+  @PostMapping("/question/edit")
+  public void editQuestion(@RequestBody QuestionEditApiRequest request, @RequestParam("questionNumber") Integer questionNumber) throws JsonProcessingException, ServiceException {
+
+    questionService.editQuestion(request, questionNumber);
   }
 }
