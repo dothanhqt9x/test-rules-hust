@@ -14,4 +14,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
   @Query(value = "select * from `user` u order by u.score desc limit 5", nativeQuery = true)
   List<UserEntity> getUsersOrderAndLimit();
+
+  List<UserEntity> getUserEntitiesByRoleOrRole(String role1, String role2);
 }

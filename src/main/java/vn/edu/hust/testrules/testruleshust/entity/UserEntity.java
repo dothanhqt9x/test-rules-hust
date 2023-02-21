@@ -23,4 +23,5 @@ public class UserEntity {
   private String gender;
   private String avatar;
   private Integer score;
+  private String status;
 }

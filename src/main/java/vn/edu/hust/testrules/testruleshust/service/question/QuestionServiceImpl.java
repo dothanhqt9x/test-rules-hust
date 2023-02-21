@@ -95,10 +95,21 @@ public class QuestionServiceImpl implements QuestionService {
     String questionRequest = convertToTextStandard(request.getQuestion(), request.getAnswer());
     List<QuestionEntity> questionEntities = questionRepository.findAll();
 
-    if (Objects.isNull(request.getImage()) || request.getImage().isEmpty()) {
-      checkText(questionEntities, questionRequest);
-    } else {
+    // neu text >= 80 throw luon
+    checkText(questionEntities, questionRequest);
+
+    //    if (Objects.isNull(request.getImage()) || request.getImage().isEmpty()) {
+    //      checkText(questionEntities, questionRequest);
+    //    } else {
+    //      checkTextAndImage(questionEntities, questionRequest, request);
+    //    }
+
+    QuestionEntity entity = new QuestionEntity();
+
+    if (Objects.nonNull(request.getImage()) && !request.getImage().isEmpty()) {
       checkTextAndImage(questionEntities, questionRequest, request);
+      String urlImage = service.uploadFile(request.getImage());
+      entity.setImage("https://test-rules-hust.s3.ap-northeast-1.amazonaws.com/" + urlImage);
     }
 
     String questionJson =
@@ -107,7 +118,6 @@ public class QuestionServiceImpl implements QuestionService {
                 .question(request.getQuestion())
                 .answer(request.getAnswer())
                 .build());
-    QuestionEntity entity = new QuestionEntity();
     entity.setType("01");
     entity.setQuestionJson(questionJson);
     entity.setAnswer(request.getKey().toString());
@@ -442,7 +452,8 @@ public class QuestionServiceImpl implements QuestionService {
   }
 
   @Override
-  public void editQuestion(QuestionEditApiRequest request, Integer questionNumber) throws JsonProcessingException, ServiceException {
+  public void editQuestion(QuestionEditApiRequest request, Integer questionNumber)
+      throws JsonProcessingException, ServiceException {
 
     QuestionEntity questionEntity = questionRepository.findByQuestionNumber(questionNumber);
 
@@ -503,7 +514,7 @@ public class QuestionServiceImpl implements QuestionService {
       List<String> answers = questionJson.getAnswer();
       String questionTextStandard = convertToTextStandard(question, answers);
       int lcs = LCS(questionRequest.toCharArray(), questionTextStandard.toCharArray());
-      if (lcs / Math.min(questionRequest.length(), questionTextStandard.length()) >= 0.8) {
+      if (lcs * 100 / Math.min(questionRequest.length(), questionTextStandard.length()) >= 80) {
         throw new ServiceException("question_duplicate_text ");
       }
     }
@@ -522,18 +533,18 @@ public class QuestionServiceImpl implements QuestionService {
       String questionTextStandard = convertToTextStandard(question, answers);
       int lcs = LCS(questionRequest.toCharArray(), questionTextStandard.toCharArray());
       double lcsForImage;
-      double lcsForText = lcs / Math.min(questionRequest.length(), questionTextStandard.length());
+      double lcsForText =
+          lcs * 100 / Math.min(questionRequest.length(), questionTextStandard.length());
+
+      if (lcsForText < 60) {
+        continue;
+      }
+
       if (Objects.nonNull(questionEntity.getImage())) {
         lcsForImage = CheckForImage(request.getImage(), questionEntity.getImage());
-        if (lcsForImage <= 20 && lcsForText >= 0.6) {
-          System.out.println("End time" + System.currentTimeMillis());
+        if (lcsForImage <= 20) {
           throw new ServiceException("question_duplicate_text_and_image");
         }
-      } else if (lcsForText >= 0.8) {
-        System.out.println("End time" + System.currentTimeMillis());
-        throw new ServiceException("question_duplicate_text");
-      } else {
-        service.uploadFile(request.getImage());
       }
     }
   }
