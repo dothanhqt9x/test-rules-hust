@@ -5,12 +5,12 @@ cloud:
     stack:
       auto: false
     credentials:
-      accessKey: AKIA3JXQWGCFASSJT2GL
-      secretKey: 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
+      accessKey: AKIAQNTLX6QSAQDK2OOB
+      secretKey: 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
 
 application:
   bucket:
-    name: test-rules-hust
+    name: test-rules-hust-bk
 
 logging:
   level:
