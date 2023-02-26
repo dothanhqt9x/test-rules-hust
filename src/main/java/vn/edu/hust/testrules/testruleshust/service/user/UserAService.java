@@ -1,6 +1,7 @@
 package vn.edu.hust.testrules.testruleshust.service.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,9 @@ public class UserAService implements UserService {
   private final SchoolRepository schoolRepository;
   private final PasswordEncoder passwordEncoder;
   private final S3BucketStorageService service;
+
+  @Value("${application.bucket.name}")
+  private String bucketName;
 
   @Override
   public Boolean registerUser(RegisterRequest registerRequest) {
@@ -102,7 +106,7 @@ public class UserAService implements UserService {
 
     UserEntity user = userRepository.findUserEntityByEmail(email);
 
-    user.setAvatar("https://test-rules-hust.s3.ap-northeast-1.amazonaws.com/" + fileName);
+    user.setAvatar("https://"+bucketName+".s3.ap-northeast-1.amazonaws.com/" + fileName);
 
     userRepository.save(user);
   }

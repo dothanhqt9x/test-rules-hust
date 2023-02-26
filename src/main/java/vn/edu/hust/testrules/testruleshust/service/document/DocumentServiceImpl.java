@@ -1,6 +1,7 @@
 package vn.edu.hust.testrules.testruleshust.service.document;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ public class DocumentServiceImpl implements DocumentService {
   private final UserRepository userRepository;
   private final S3BucketStorageService service;
 
+  @Value("${application.bucket.name}")
+  private String bucketName;
+
   @Override
   public List<DocumentEntity> getListDocument() {
 
@@ -44,7 +48,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     DocumentEntity documentEntity = new DocumentEntity();
     documentEntity.setName(request.getName());
-    documentEntity.setLink("https://test-rules-hust.s3.ap-northeast-1.amazonaws.com/" + fileName);
+    documentEntity.setLink("https://"+bucketName+".s3.ap-northeast-1.amazonaws.com/" + fileName);
     documentEntity.setCreateAt(LocalDateTime.now());
     documentEntity.setCreateBy(Math.toIntExact(user.getId()));
     documentRepository.save(documentEntity);
@@ -60,7 +64,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     if (!request.getFile().isEmpty()) {
       String fileName = service.uploadFile(request.getFile());
-      documentEntity.setLink("https://test-rules-hust.s3.ap-northeast-1.amazonaws.com/" + fileName);
+      documentEntity.setLink("https://"+bucketName+".s3.ap-northeast-1.amazonaws.com/" + fileName);
     }
 
     documentEntity.setName(request.getName());
