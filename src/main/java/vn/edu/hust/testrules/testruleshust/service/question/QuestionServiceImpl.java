@@ -474,6 +474,48 @@ public class QuestionServiceImpl implements QuestionService {
     questionRepository.save(questionEntity);
   }
 
+  @Override
+  public List<QuestionGetAllApiResponse> getQuestionForApp() {
+    List<QuestionGetAllApiResponse> questionGetAllApiResponseList = new ArrayList<>();
+    List<QuestionEntity> questionEntities = questionRepository.findQuestionForApp();
+
+    // generate random set
+    Set<Integer> randomNumbers = createSetRandomNumber(15, questionEntities.size());
+
+    for (int k : randomNumbers) {
+      QuestionEntity questionEntity = questionEntities.get(k);
+      try {
+        QuestionJson question =
+                objectMapper.readValue(questionEntity.getQuestionJson(), QuestionJson.class);
+        String[] strings =
+                questionEntity
+                        .getAnswer()
+                        .replace("[", "")
+                        .replace("]", "")
+                        .replaceAll("\\s+", "")
+                        .split(",");
+        Integer[] numbers = new Integer[strings.length];
+        for (int i = 0; i < numbers.length; i++) {
+          try {
+            numbers[i] = Integer.parseInt(strings[i]);
+          } catch (NumberFormatException nfe) {
+            numbers[i] = null;
+          }
+        }
+        questionGetAllApiResponseList.add(
+                QuestionGetAllApiResponse.builder()
+                        .question(question.getQuestion())
+                        .answer(question.getAnswer())
+                        .key(Arrays.stream(numbers).toList())
+                        .questionNumber(questionEntity.getQuestionNumber())
+                        .build());
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      }
+    }
+    return questionGetAllApiResponseList;
+  }
+
   private int LCS(char[] X, char[] Y) {
     int m = X.length;
     int n = Y.length;

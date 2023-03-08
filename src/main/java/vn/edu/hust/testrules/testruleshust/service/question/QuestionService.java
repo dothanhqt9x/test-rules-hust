@@ -36,4 +36,6 @@ public interface QuestionService {
     DashboardApiResponse getDashboard();
 
     void editQuestion(QuestionEditApiRequest request, Integer questionNumber) throws JsonProcessingException, ServiceException;
+
+    List<QuestionGetAllApiResponse> getQuestionForApp();
 }

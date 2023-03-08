@@ -110,4 +110,9 @@ public class QuestionController {
 
     questionService.editQuestion(request, questionNumber);
   }
+
+  @GetMapping("/getQuestionForApp")
+  List<QuestionGetAllApiResponse> getQuestionForApp() {
+    return questionService.getQuestionForApp();
+  }
 }
