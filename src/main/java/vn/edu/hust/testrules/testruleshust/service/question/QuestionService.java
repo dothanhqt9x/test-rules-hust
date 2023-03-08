@@ -30,7 +30,7 @@ public interface QuestionService {
     List<HistoryApiResponse> getListHistory(String email);
     List<HistoryJson> getHistoryDetails(Integer historyId) throws JsonProcessingException, JSONException, ServiceException;
     List<AllQuestionApiResponse> getListQuestion(int pageNo, int pageSize);
-    List<UserMaxScoreApiResponse> submitQuestionForApp(String email, Integer score);
+    void submitQuestionForApp(String email, Integer score);
     List<HistoryForGetListApiResponse> getListHistoryByMSSV(Integer mssv);
     List<HistoryForGetListApiResponse> getListHistoryFilter(Integer min, Integer max);
     DashboardApiResponse getDashboard();

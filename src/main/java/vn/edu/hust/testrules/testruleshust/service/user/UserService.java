@@ -8,6 +8,7 @@ import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.Registe
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.ChangePasswordApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.EditUserApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetDetailApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetRank;
 import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 
 import java.util.List;
@@ -24,4 +25,6 @@ public interface UserService {
     List<AccountApiResponse> getListAccount();
 
     void editStatusAccount(EditStatusAccountApiRequest request) throws ServiceException;
+
+    List<GetRank> getListRankForApp();
 }

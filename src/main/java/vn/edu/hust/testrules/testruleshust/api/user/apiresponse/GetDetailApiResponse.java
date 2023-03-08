@@ -15,4 +15,5 @@ public class GetDetailApiResponse {
     private final String address;
     private final String gender;
     private final String avatar;
+    private final Integer score;
 }

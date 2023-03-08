@@ -8,10 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.api.admin.apirequest.EditStatusAccountApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.AccountApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.UserMaxScoreApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.RegisterRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.ChangePasswordApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.EditUserApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetDetailApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetRank;
 import vn.edu.hust.testrules.testruleshust.entity.SchoolEntity;
 import vn.edu.hust.testrules.testruleshust.entity.UserEntity;
 import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
@@ -78,6 +80,7 @@ public class UserAService implements UserService {
         .school(schoolEntity.getName())
         .gender(user.getGender())
         .avatar(user.getAvatar())
+        .score(user.getScore())
         .build();
   }
 
@@ -107,7 +110,7 @@ public class UserAService implements UserService {
 
     UserEntity user = userRepository.findUserEntityByEmail(email);
 
-    user.setAvatar("https://"+bucketName+".s3.ap-northeast-1.amazonaws.com/" + fileName);
+    user.setAvatar("https://" + bucketName + ".s3.ap-northeast-1.amazonaws.com/" + fileName);
 
     userRepository.save(user);
   }
@@ -153,5 +156,24 @@ public class UserAService implements UserService {
     user.setStatus(request.getStatus());
 
     userRepository.save(user);
+  }
+
+  @Override
+  public List<GetRank> getListRankForApp() {
+    List<GetRank> rankList = new ArrayList<>();
+
+    List<UserEntity> userEntities = userRepository.getUsersOrderAndLimit();
+
+    userEntities.forEach(
+        userEntity ->
+            rankList.add(
+                GetRank.builder()
+                    .username(userEntity.getName())
+                    .email(userEntity.getEmail())
+                    .avatar(userEntity.getAvatar())
+                    .score(userEntity.getScore())
+                    .build()));
+
+    return rankList;
   }
 }

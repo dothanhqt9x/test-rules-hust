@@ -9,10 +9,12 @@ import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.ChangePasswordApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.EditUserApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetDetailApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetRank;
 import vn.edu.hust.testrules.testruleshust.service.user.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,5 +47,10 @@ public class UserController {
   public void updateAvatar(@RequestParam(name = "file", required = false) MultipartFile file) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     userService.uploadAvatar(file, authentication.getName());
+  }
+
+  @GetMapping("/getListRank")
+  public List<GetRank> getListRankForApp() {
+    return userService.getListRankForApp();
   }
 }

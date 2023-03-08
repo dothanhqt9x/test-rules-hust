@@ -369,7 +369,7 @@ public class QuestionServiceImpl implements QuestionService {
   }
 
   @Override
-  public List<UserMaxScoreApiResponse> submitQuestionForApp(String email, Integer score) {
+  public void submitQuestionForApp(String email, Integer score) {
 
     // ini array
     List<UserMaxScoreApiResponse> userMaxScoreApiResponses = new ArrayList<>();
@@ -378,19 +378,19 @@ public class QuestionServiceImpl implements QuestionService {
     user.setScore(user.getScore() + score);
     userRepository.save(user);
 
-    List<UserEntity> userEntities = userRepository.getUsersOrderAndLimit();
+//    List<UserEntity> userEntities = userRepository.getUsersOrderAndLimit();
+//
+//    userEntities.forEach(
+//        userEntity ->
+//            userMaxScoreApiResponses.add(
+//                UserMaxScoreApiResponse.builder()
+//                    .username(userEntity.getName())
+//                    .email(userEntity.getEmail())
+//                    .avatar(userEntity.getAvatar())
+//                    .score(userEntity.getScore())
+//                    .build()));
 
-    userEntities.forEach(
-        userEntity ->
-            userMaxScoreApiResponses.add(
-                UserMaxScoreApiResponse.builder()
-                    .username(userEntity.getName())
-                    .email(userEntity.getEmail())
-                    .avatar(userEntity.getAvatar())
-                    .score(userEntity.getScore())
-                    .build()));
-
-    return userMaxScoreApiResponses;
+//    return userMaxScoreApiResponses;
   }
 
   @Override

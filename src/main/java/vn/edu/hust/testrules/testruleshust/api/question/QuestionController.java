@@ -100,9 +100,10 @@ public class QuestionController {
   }
 
   @PostMapping("/question/submitForApp")
-  public List<UserMaxScoreApiResponse> submitQuestionForApp(@RequestParam("score") Integer score) {
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void submitQuestionForApp(@RequestParam("score") Integer score) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return questionService.submitQuestionForApp(authentication.getName(), score);
+    questionService.submitQuestionForApp(authentication.getName(), score);
   }
 
   @PostMapping("/question/edit")
