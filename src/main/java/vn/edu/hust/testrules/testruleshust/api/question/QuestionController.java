@@ -95,8 +95,9 @@ public class QuestionController {
   }
 
   @GetMapping("/question/all")
-  List<QuestionGetAllApiResponse> getAllQuestion(@RequestParam("size") Integer size) {
-    return questionService.getAllQuestion(size);
+  List<QuestionGetAllApiResponse> getAllQuestion(@RequestParam("size") Integer size) throws JSONException {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return questionService.getAllQuestion(size, authentication.getName());
   }
 
   @PostMapping("/question/submitForApp")

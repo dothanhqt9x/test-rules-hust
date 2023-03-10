@@ -30,4 +30,5 @@ public class RegisterRequest {
 
   private final String name;
   private final String gender;
+  private final String role;
 }

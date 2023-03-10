@@ -24,7 +24,7 @@ public interface QuestionService {
 
     QuestionServiceResponse getOneQuestion() throws JsonProcessingException;
     void insertNewQuestion(QuestionServiceRequest request) throws JsonProcessingException, ServiceException;
-    List<QuestionGetAllApiResponse> getAllQuestion(Integer size);
+    List<QuestionGetAllApiResponse> getAllQuestion(Integer size, String email) throws JSONException;
     void insertAllQuestion() throws IOException;
     void submitQuestion(List<SubmitQuestionApiRequest> requests, String email) throws JsonProcessingException;
     List<HistoryApiResponse> getListHistory(String email);

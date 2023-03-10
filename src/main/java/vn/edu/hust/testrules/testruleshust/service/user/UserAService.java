@@ -54,7 +54,12 @@ public class UserAService implements UserService {
     userEntity.setMssv(registerRequest.getMssv());
     userEntity.setSchool(registerRequest.getSchoolId());
     userEntity.setGender(registerRequest.getGender());
-    userEntity.setRole("01");
+
+    if(Objects.isNull(registerRequest.getRole())) {
+      userEntity.setRole("01");
+    } else {
+      userEntity.setRole(registerRequest.getRole());
+    }
     userEntity.setStatus("1");
     userEntity.setScore(0);
     userRepository.save(userEntity);

@@ -43,6 +43,14 @@ public class TestRulesExceptionHandler extends ResponseEntityExceptionHandler {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("history_not_found").build());
     }
 
+    if ("answer_duplicate".equals(exception.getCauseId())) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("answer_duplicate").build());
+    }
+
+    if ("question_answer_key_is_null".equals(exception.getCauseId())) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("question_answer_key_is_null").build());
+    }
+
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("question_duplicate").build());
   }
 

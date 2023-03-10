@@ -50,14 +50,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .csrf()
         .disable()
         .authorizeRequests()
-        .antMatchers("/login", "/register")
+        .antMatchers("/login", "/register", "/getListSchool")
         .permitAll() // Cho phép tất cả mọi người truy cập vào 2 địa chỉ này
         .antMatchers(
-            "/user/detail",
             "/user/edit",
             "/change/password",
             "/get_history_list",
-            "/get_history_details",
             "/question/all",
             "/question/submit",
             "/create/post",
@@ -68,21 +66,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/searchPost",
             "/uploadAvatar",
             "/submitForApp")
-        .hasAuthority("01")
+        .hasAnyAuthority("01", "02")
         .antMatchers(
             "/question/create",
             "/getListQuestion/**",
-            "/createSchool",
-            "/editSchool",
             "/createDocument",
             "/editDocument",
             "/getListHistoryFilter",
             "/getListHistorySearch",
             "/deleteDocument/**")
-        .hasAuthority("02")
-        .antMatchers("/getListDocument")
-        .hasAnyAuthority(
-            "01", "02"); // Tất cả các request khác đều cần phải xác thực mới được truy cập
+        .hasAnyAuthority("02", "03")
+        .antMatchers("/getListDocument", "/get_history_details", "/user/detail")
+        .hasAnyAuthority("01", "02", "03")
+        .antMatchers("/createSchool", "/editSchool", "/getListAccount", "/editStatusAccount")
+        .hasAuthority("03"); // Tất cả các request khác đều cần phải xác thực mới được truy cập
 
     // Thêm một lớp Filter kiểm tra jwt
     http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

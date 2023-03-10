@@ -24,4 +24,7 @@ public class HistoryEntity {
 
   @Column(name = "time_test_at")
   private LocalDateTime timeTestAt;
+
+  @Column(name = "question_list")
+  private String questionList;
 }

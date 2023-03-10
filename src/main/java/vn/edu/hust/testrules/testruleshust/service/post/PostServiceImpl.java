@@ -71,6 +71,7 @@ public class PostServiceImpl implements PostService {
                   .content(postEntity.getContent())
                   .time(postEntity.getTime())
                   .username(username)
+                  .avatar(user.getAvatar())
                   .build());
         });
 

@@ -18,4 +18,5 @@ public class PostApiResponse {
   private final LocalDateTime time;
 
   private final String username;
+  private final String avatar;
 }

@@ -90,6 +90,17 @@ public class QuestionServiceImpl implements QuestionService {
   public void insertNewQuestion(QuestionServiceRequest request)
       throws JsonProcessingException, ServiceException {
 
+    if ((request.getAnswer().isEmpty()) || Objects.isNull(request.getQuestion()) || (request.getKey().isEmpty())) {
+      throw new ServiceException("question_answer_key_is_null");
+    }
+
+    Set<String> stringSet = new HashSet<>();
+    for (String answer: request.getAnswer()) {
+      if (!stringSet.add(answer)) {
+        throw new ServiceException("answer_duplicate");
+      }
+    }
+
     System.out.println("Start time" + System.currentTimeMillis());
 
     String questionRequest = convertToTextStandard(request.getQuestion(), request.getAnswer());
@@ -109,7 +120,7 @@ public class QuestionServiceImpl implements QuestionService {
     if (Objects.nonNull(request.getImage()) && !request.getImage().isEmpty()) {
       checkTextAndImage(questionEntities, questionRequest, request);
       String urlImage = service.uploadFile(request.getImage());
-      entity.setImage("https://test-rules-hust.s3.ap-northeast-1.amazonaws.com/" + urlImage);
+      entity.setImage("https://test-rules-hust-bk.s3.ap-northeast-1.amazonaws.com/" + urlImage);
     }
 
     String questionJson =
@@ -126,13 +137,19 @@ public class QuestionServiceImpl implements QuestionService {
   }
 
   @Override
-  public List<QuestionGetAllApiResponse> getAllQuestion(Integer size) {
+  public List<QuestionGetAllApiResponse> getAllQuestion(Integer size, String email) throws JSONException {
 
     List<QuestionGetAllApiResponse> questionGetAllApiResponseList = new ArrayList<>();
     List<QuestionEntity> questionEntities = questionRepository.findAll();
 
+//    UserEntity user = userRepository.findUserEntityByEmail(email);
+//    List<HistoryEntity> historyEntityList = historyRepository.findHistoryEntitiesByUserId(Math.toIntExact(user.getId()));
+
     // generate random set
     Set<Integer> randomNumbers = createSetRandomNumber(size, questionEntities.size());
+//    do{
+//      randomNumbers = createSetRandomNumber(size, questionEntities.size());
+//    } while (checkSetOfQuestions(historyEntityList, randomNumbers));
 
     for (int k : randomNumbers) {
       QuestionEntity questionEntity = questionEntities.get(k);
@@ -228,6 +245,11 @@ public class QuestionServiceImpl implements QuestionService {
   public void submitQuestion(List<SubmitQuestionApiRequest> requests, String email)
       throws JsonProcessingException {
 
+    List<Integer> questionList = new ArrayList<>();
+    for (SubmitQuestionApiRequest request: requests) {
+      questionList.add(request.getQuestionNumber());
+    }
+
     // score
     int score = 0;
 
@@ -268,6 +290,7 @@ public class QuestionServiceImpl implements QuestionService {
     entity.setHistoryJson(historyJson);
     entity.setScore(score);
     entity.setTimeTestAt(LocalDateTime.now());
+    entity.setQuestionList(questionList.toString());
 
     historyRepository.save(entity);
   }
@@ -557,7 +580,7 @@ public class QuestionServiceImpl implements QuestionService {
       String questionTextStandard = convertToTextStandard(question, answers);
       int lcs = LCS(questionRequest.toCharArray(), questionTextStandard.toCharArray());
       if (lcs * 100 / Math.min(questionRequest.length(), questionTextStandard.length()) >= 80) {
-        throw new ServiceException("question_duplicate_text ");
+        throw new ServiceException("question_duplicate_text");
       }
     }
   }
@@ -675,5 +698,22 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     return set;
+  }
+
+  private Boolean checkSetOfQuestions(List<HistoryEntity> historyEntityList, Set<Integer> randomNumbers) throws JSONException {
+    for (HistoryEntity historyEntity: historyEntityList) {
+      JSONArray jsonArray = new JSONArray(historyEntity.getQuestionList());
+      Set<Integer> set = new HashSet<>();
+
+      for (int i = 0; i < jsonArray.length(); i++) {
+        // Lấy ra giá trị của phần tử và thêm vào Set
+        set.add(jsonArray.getInt(i));
+      }
+
+      if (randomNumbers.equals(set)) {
+        return Boolean.TRUE;
+      }
+    }
+    return Boolean.FALSE;
   }
 }
