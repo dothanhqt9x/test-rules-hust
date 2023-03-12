@@ -142,14 +142,14 @@ public class QuestionServiceImpl implements QuestionService {
     List<QuestionGetAllApiResponse> questionGetAllApiResponseList = new ArrayList<>();
     List<QuestionEntity> questionEntities = questionRepository.findAll();
 
-//    UserEntity user = userRepository.findUserEntityByEmail(email);
-//    List<HistoryEntity> historyEntityList = historyRepository.findHistoryEntitiesByUserId(Math.toIntExact(user.getId()));
+    UserEntity user = userRepository.findUserEntityByEmail(email);
+    List<HistoryEntity> historyEntityList = historyRepository.findHistoryEntitiesByUserId(Math.toIntExact(user.getId()));
 
     // generate random set
     Set<Integer> randomNumbers = createSetRandomNumber(size, questionEntities.size());
-//    do{
-//      randomNumbers = createSetRandomNumber(size, questionEntities.size());
-//    } while (checkSetOfQuestions(historyEntityList, randomNumbers));
+    do{
+      randomNumbers = createSetRandomNumber(size, questionEntities.size());
+    } while (checkSetOfQuestions(historyEntityList, randomNumbers));
 
     for (int k : randomNumbers) {
       QuestionEntity questionEntity = questionEntities.get(k);

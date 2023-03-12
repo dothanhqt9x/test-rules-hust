@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.api.admin.apirequest.EditStatusAccountApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.AccountApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.RegisterForAppRequest;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.RegisterRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.ChangePasswordApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.EditUserApiRequest;
@@ -27,4 +28,6 @@ public interface UserService {
     void editStatusAccount(EditStatusAccountApiRequest request) throws ServiceException;
 
     List<GetRank> getListRankForApp();
+
+    Boolean registerUserForApp(RegisterForAppRequest registerForAppRequest);
 }

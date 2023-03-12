@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.api.admin.apirequest.EditStatusAccountApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.admin.apiresponse.AccountApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.question.apiresponse.UserMaxScoreApiResponse;
+import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.RegisterForAppRequest;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.RegisterRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.ChangePasswordApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.EditUserApiRequest;
@@ -180,5 +181,27 @@ public class UserAService implements UserService {
                     .build()));
 
     return rankList;
+  }
+
+  @Override
+  public Boolean registerUserForApp(RegisterForAppRequest registerForAppRequest) {
+
+    UserEntity user = userRepository.findUserEntityByEmail(registerForAppRequest.getEmail());
+
+    if (user != null) {
+      return false;
+    }
+
+    UserEntity userEntity = new UserEntity();
+
+    userEntity.setEmail(registerForAppRequest.getEmail());
+    userEntity.setPassword(passwordEncoder.encode(registerForAppRequest.getPassword()));
+    userEntity.setName(registerForAppRequest.getName());
+    userEntity.setSchool(1);
+    userEntity.setRole("01");
+    userEntity.setStatus("1");
+    userEntity.setScore(0);
+    userRepository.save(userEntity);
+    return true;
   }
 }

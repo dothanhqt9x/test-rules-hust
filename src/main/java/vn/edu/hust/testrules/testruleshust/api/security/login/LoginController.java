@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.LoginRequest;
+import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.RegisterForAppRequest;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.RegisterRequest;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apiresponse.LoginResponse;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apiresponse.RegisterResponse;
@@ -53,6 +54,16 @@ public class LoginController {
     }
 
     if (Boolean.TRUE.equals(userService.registerUser(registerRequest))) {
+      return ResponseEntity.ok().body(RegisterResponse.builder().status("OK").build());
+    }
+
+    return ResponseEntity.ok(RegisterResponse.builder().status("NG").build());
+  }
+
+  @PostMapping("/registerForApp")
+  public ResponseEntity<Object> registerUserForApp(@Valid @RequestBody RegisterForAppRequest registerForAppRequest) {
+
+    if (Boolean.TRUE.equals(userService.registerUserForApp(registerForAppRequest))) {
       return ResponseEntity.ok().body(RegisterResponse.builder().status("OK").build());
     }
 

@@ -50,7 +50,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .csrf()
         .disable()
         .authorizeRequests()
-        .antMatchers("/login", "/register", "/getListSchool")
+        .antMatchers("/login", "/register", "/getListSchool", "/registerForApp")
         .permitAll() // Cho phép tất cả mọi người truy cập vào 2 địa chỉ này
         .antMatchers(
             "/user/edit",
