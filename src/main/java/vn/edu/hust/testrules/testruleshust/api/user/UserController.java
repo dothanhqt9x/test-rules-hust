@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.ChangePasswordApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.EditUserApiRequest;
+import vn.edu.hust.testrules.testruleshust.api.user.apirequest.ForgetPasswordApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.VerifyOTPApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetDetailApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetRank;
@@ -60,10 +61,9 @@ public class UserController {
   }
 
   @PostMapping("/forgotPassword")
-  public ResponseEntity<String> forgotPassword() {
+  public ResponseEntity<String> forgotPassword(@RequestBody ForgetPasswordApiRequest request) {
 
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (userService.forgotPassword(authentication.getName())) {
+    if (userService.forgotPassword(request.getEmail())) {
       return ResponseEntity.ok().body("Success");
     }
 
@@ -72,8 +72,7 @@ public class UserController {
 
   @PostMapping("/verifyOTP")
   public ResponseEntity<String> verifyOTP(@RequestBody VerifyOTPApiRequest request) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Boolean status = userService.verifyOTP(authentication.getName(), request.getOTP(), request.getPassword());
+    Boolean status = userService.verifyOTP(request.getEmail(), request.getOTP(), request.getPassword());
 
     if (status) {
       return ResponseEntity.ok().body("Success");

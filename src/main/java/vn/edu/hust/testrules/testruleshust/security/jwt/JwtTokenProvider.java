@@ -11,7 +11,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
   private final String JWT_SECRET = "testruleshust";
-  private final long JWT_EXPIRATION = 1000000L;
+  private final long JWT_EXPIRATION = 2592000000L;
 
   public String generateToken(CustomUserDetails userDetails) {
     // Lấy thông tin user

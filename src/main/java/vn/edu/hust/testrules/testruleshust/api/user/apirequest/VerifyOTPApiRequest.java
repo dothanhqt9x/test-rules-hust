@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder
 public class VerifyOTPApiRequest {
 
+    private final String email;
     private final String OTP;
     private final String password;
 }

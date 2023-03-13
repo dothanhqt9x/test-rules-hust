@@ -239,7 +239,7 @@ public class UserAService implements UserService {
     UserEntity userEntity = userRepository.findUserEntityByEmail(email);
     long diff = Math.abs(Duration.between(LocalDateTime.now(), userEntity.getTimeOTP()).toSeconds());
 
-    if (otp.equals(userEntity.getOTP()) && diff < 60) {
+    if (otp.equals(userEntity.getOTP()) && diff < 300) {
       userEntity.setPassword(passwordEncoder.encode(password));
       userRepository.save(userEntity);
       return Boolean.TRUE;
