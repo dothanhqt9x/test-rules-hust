@@ -1,6 +1,7 @@
 package vn.edu.hust.testrules.testruleshust.api.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -13,8 +14,6 @@ import vn.edu.hust.testrules.testruleshust.api.user.apirequest.ForgetPasswordApi
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.VerifyOTPApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetDetailApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetRank;
-import vn.edu.hust.testrules.testruleshust.service.mail.EmailService;
-import vn.edu.hust.testrules.testruleshust.service.mail.servicerequest.EmailDetails;
 import vn.edu.hust.testrules.testruleshust.service.user.UserService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +25,7 @@ import java.util.List;
 public class UserController {
 
   private final UserService userService;
-  private final EmailService emailService;
+  @Value("${spring.mail.username}") private String sender;
 
   @GetMapping("/user/detail")
   public GetDetailApiResponse getUserDetail(HttpServletRequest request) {
@@ -63,6 +62,10 @@ public class UserController {
   @PostMapping("/forgotPassword")
   public ResponseEntity<String> forgotPassword(@RequestBody ForgetPasswordApiRequest request) {
 
+    if (sender.equals(request.getEmail())) {
+      return ResponseEntity.badRequest().body("Error");
+    }
+
     if (userService.forgotPassword(request.getEmail())) {
       return ResponseEntity.ok().body("Success");
     }
@@ -72,6 +75,7 @@ public class UserController {
 
   @PostMapping("/verifyOTP")
   public ResponseEntity<String> verifyOTP(@RequestBody VerifyOTPApiRequest request) {
+
     Boolean status = userService.verifyOTP(request.getEmail(), request.getOTP(), request.getPassword());
 
     if (status) {
