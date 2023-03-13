@@ -2,14 +2,18 @@ package vn.edu.hust.testrules.testruleshust.api.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.ChangePasswordApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apirequest.EditUserApiRequest;
+import vn.edu.hust.testrules.testruleshust.api.user.apirequest.VerifyOTPApiRequest;
 import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetDetailApiResponse;
 import vn.edu.hust.testrules.testruleshust.api.user.apiresponse.GetRank;
+import vn.edu.hust.testrules.testruleshust.service.mail.EmailService;
+import vn.edu.hust.testrules.testruleshust.service.mail.servicerequest.EmailDetails;
 import vn.edu.hust.testrules.testruleshust.service.user.UserService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +25,7 @@ import java.util.List;
 public class UserController {
 
   private final UserService userService;
+  private final EmailService emailService;
 
   @GetMapping("/user/detail")
   public GetDetailApiResponse getUserDetail(HttpServletRequest request) {
@@ -52,5 +57,28 @@ public class UserController {
   @GetMapping("/getListRank")
   public List<GetRank> getListRankForApp() {
     return userService.getListRankForApp();
+  }
+
+  @PostMapping("/forgotPassword")
+  public ResponseEntity<String> forgotPassword() {
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (userService.forgotPassword(authentication.getName())) {
+      return ResponseEntity.ok().body("Success");
+    }
+
+    return ResponseEntity.badRequest().body("Error");
+  }
+
+  @PostMapping("/verifyOTP")
+  public ResponseEntity<String> verifyOTP(@RequestBody VerifyOTPApiRequest request) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Boolean status = userService.verifyOTP(authentication.getName(), request.getOTP(), request.getPassword());
+
+    if (status) {
+      return ResponseEntity.ok().body("Success");
+    }
+
+    return ResponseEntity.badRequest().body("Error");
   }
 }

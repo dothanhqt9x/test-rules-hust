@@ -30,4 +30,8 @@ public interface UserService {
     List<GetRank> getListRankForApp();
 
     Boolean registerUserForApp(RegisterForAppRequest registerForAppRequest);
+
+    Boolean forgotPassword(String email);
+
+    Boolean verifyOTP(String email, String otp, String password);
 }

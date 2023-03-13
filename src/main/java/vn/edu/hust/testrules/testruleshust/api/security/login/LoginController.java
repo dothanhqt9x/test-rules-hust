@@ -14,6 +14,7 @@ import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.Registe
 import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.RegisterRequest;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apiresponse.LoginResponse;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apiresponse.RegisterResponse;
+import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.exception.response.ErrorResponse;
 import vn.edu.hust.testrules.testruleshust.security.jwt.CustomUserDetails;
 import vn.edu.hust.testrules.testruleshust.security.jwt.JwtTokenProvider;
@@ -61,13 +62,15 @@ public class LoginController {
   }
 
   @PostMapping("/registerForApp")
-  public ResponseEntity<Object> registerUserForApp(@Valid @RequestBody RegisterForAppRequest registerForAppRequest) {
+  public ResponseEntity<Object> registerUserForApp(@Valid @RequestBody RegisterForAppRequest registerForAppRequest) throws ServiceException {
 
     if (Boolean.TRUE.equals(userService.registerUserForApp(registerForAppRequest))) {
       return ResponseEntity.ok().body(RegisterResponse.builder().status("OK").build());
     }
 
-    return ResponseEntity.ok(RegisterResponse.builder().status("NG").build());
+    throw new ServiceException("Account already exists");
+
+//    return ResponseEntity.ok(RegisterResponse.builder().status("NG").build());
   }
 
   private Boolean validateRequest(RegisterRequest registerRequest) {

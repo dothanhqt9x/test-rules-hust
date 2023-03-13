@@ -3,6 +3,7 @@ package vn.edu.hust.testrules.testruleshust.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Table(name = "USER")
 @Entity
@@ -24,4 +25,8 @@ public class UserEntity {
   private String avatar;
   private Integer score;
   private String status;
+  private String OTP;
+
+  @Column(name = "time_otp")
+  private LocalDateTime timeOTP;
 }

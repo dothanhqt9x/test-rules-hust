@@ -6,6 +6,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -25,6 +26,14 @@ public class TestRulesExceptionHandler extends ResponseEntityExceptionHandler {
   private final String RESULT_NG = "ng";
 
   private final MessageSource messageSource;
+
+  @ExceptionHandler({BadCredentialsException.class})
+  public ResponseEntity<Object> handleBadCredentialsException() {
+
+    log.error("log error is here BadCredentialsException exception");
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("Email hoặc mật khẩu không đúng").build());
+  }
 
   @ExceptionHandler({ServiceException.class})
   public ResponseEntity<Object> handleServiceException(ServiceException exception) {
@@ -49,6 +58,14 @@ public class TestRulesExceptionHandler extends ResponseEntityExceptionHandler {
 
     if ("question_answer_key_is_null".equals(exception.getCauseId())) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("question_answer_key_is_null").build());
+    }
+
+    if ("Account already exists".equals(exception.getCauseId())) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("Account already exists").build());
+    }
+
+    if ("Account already exists".equals(exception.getCauseId())) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("Tài khoản đã tồn tại").build());
     }
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("question_duplicate").build());

@@ -21,10 +21,15 @@ import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.repository.SchoolRepository;
 import vn.edu.hust.testrules.testruleshust.repository.UserRepository;
 import vn.edu.hust.testrules.testruleshust.service.aws.S3BucketStorageService;
+import vn.edu.hust.testrules.testruleshust.service.mail.EmailService;
+import vn.edu.hust.testrules.testruleshust.service.mail.servicerequest.EmailDetails;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +39,7 @@ public class UserAService implements UserService {
   private final SchoolRepository schoolRepository;
   private final PasswordEncoder passwordEncoder;
   private final S3BucketStorageService service;
+  private final EmailService emailService;
 
   @Value("${application.bucket.name}")
   private String bucketName;
@@ -56,7 +62,7 @@ public class UserAService implements UserService {
     userEntity.setSchool(registerRequest.getSchoolId());
     userEntity.setGender(registerRequest.getGender());
 
-    if(Objects.isNull(registerRequest.getRole())) {
+    if (Objects.isNull(registerRequest.getRole())) {
       userEntity.setRole("01");
     } else {
       userEntity.setRole(registerRequest.getRole());
@@ -203,5 +209,48 @@ public class UserAService implements UserService {
     userEntity.setScore(0);
     userRepository.save(userEntity);
     return true;
+  }
+
+  @Override
+  public Boolean forgotPassword(String email) {
+
+    String subject = "Mã OTP xác nhận quên mật khẩu";
+    String OTP = generateOTP();
+    String body =
+        "Chào bạn \n Mã OTP của bạn là: "
+            + OTP
+            + ". \n Lưu ý không để ai biết mã OTP của bạn \n Cám ơn";
+    Boolean statusSendEmail = emailService.sendSimpleMail(
+        EmailDetails.builder().recipient(email).subject(subject).msgBody(body).build());
+
+    if (statusSendEmail) {
+      UserEntity userEntity = userRepository.findUserEntityByEmail(email);
+      userEntity.setOTP(OTP);
+      userEntity.setTimeOTP(LocalDateTime.now());
+      userRepository.save(userEntity);
+      return Boolean.TRUE;
+    }
+    return Boolean.FALSE;
+  }
+
+  @Override
+  public Boolean verifyOTP(String email, String otp, String password) {
+
+    UserEntity userEntity = userRepository.findUserEntityByEmail(email);
+    long diff = Math.abs(Duration.between(LocalDateTime.now(), userEntity.getTimeOTP()).toSeconds());
+
+    if (otp.equals(userEntity.getOTP()) && diff < 60) {
+      userEntity.setPassword(passwordEncoder.encode(password));
+      userRepository.save(userEntity);
+      return Boolean.TRUE;
+    }
+
+    return Boolean.FALSE;
+  }
+
+  private String generateOTP() {
+    Random random = new Random();
+    int randomNumber = random.nextInt(1000000);
+    return String.format("%06d", randomNumber);
   }
 }
