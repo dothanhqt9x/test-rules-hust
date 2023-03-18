@@ -21,6 +21,9 @@ public class AwsS3ClientConfig {
     @Value("${cloud.aws.region.static}")
     private String region;
 
+    /*
+    Spring boot auto-config sẽ sự động ghi đè lên cấu hình mặc định
+     */
     @Bean
     public AmazonS3 s3client() {
 
