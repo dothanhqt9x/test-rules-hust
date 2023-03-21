@@ -60,12 +60,16 @@ public class TestRulesExceptionHandler extends ResponseEntityExceptionHandler {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("question_answer_key_is_null").build());
     }
 
-    if ("Account already exists".equals(exception.getCauseId())) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("Account already exists").build());
+    if ("Tài khoản đã tồn tài hoặc chưa xác thực".equals(exception.getCauseId())) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("Tài khoản đã tồn tài hoặc chưa xác thực").build());
     }
 
-    if ("Account already exists".equals(exception.getCauseId())) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("Tài khoản đã tồn tại").build());
+//    if ("Account already exists".equals(exception.getCauseId())) {
+//      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("Tài khoản đã tồn tại").build());
+//    }
+
+    if ("Tài khoản chưa xác thực".equals(exception.getCauseId())) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("Tài khoản chưa xác thực").build());
     }
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder().result(RESULT_NG).errorMessage("question_duplicate").build());

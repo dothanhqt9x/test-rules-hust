@@ -13,8 +13,10 @@ import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.Registe
 import vn.edu.hust.testrules.testruleshust.api.security.login.apirequest.RegisterRequest;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apiresponse.LoginResponse;
 import vn.edu.hust.testrules.testruleshust.api.security.login.apiresponse.RegisterResponse;
+import vn.edu.hust.testrules.testruleshust.entity.UserEntity;
 import vn.edu.hust.testrules.testruleshust.exception.ServiceException;
 import vn.edu.hust.testrules.testruleshust.exception.response.ErrorResponse;
+import vn.edu.hust.testrules.testruleshust.repository.UserRepository;
 import vn.edu.hust.testrules.testruleshust.security.jwt.CustomUserDetails;
 import vn.edu.hust.testrules.testruleshust.security.jwt.JwtTokenProvider;
 import vn.edu.hust.testrules.testruleshust.service.user.UserService;
@@ -27,17 +29,25 @@ public class LoginController {
 
   private final AuthenticationManager authenticationManager;
 
+  private final UserRepository userRepository;
+
   private final JwtTokenProvider tokenProvider;
 
   private final UserService userService;
 
   @PostMapping("/login")
-  public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+  public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) throws ServiceException {
 
     Authentication authentication =
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 loginRequest.getEmail(), loginRequest.getPassword()));
+
+    UserEntity userEntity = userRepository.findUserEntityByEmail(authentication.getName());
+
+    if ("0".equals(userEntity.getStatus())) {
+      throw new ServiceException("Tài khoản chưa xác thực");
+    }
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -67,7 +77,7 @@ public class LoginController {
       return ResponseEntity.ok().body(RegisterResponse.builder().status("OK").build());
     }
 
-    throw new ServiceException("Account already exists");
+    throw new ServiceException("Tài khoản đã tồn tài hoặc chưa xác thực");
 
 //    return ResponseEntity.ok(RegisterResponse.builder().status("NG").build());
   }
