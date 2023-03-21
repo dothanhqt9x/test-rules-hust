@@ -56,7 +56,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/getListSchool",
             "/registerForApp",
             "/forgotPassword",
-            "/verifyOTP")
+            "/verifyOTP",
+            "/confirmOTPByEmailWhenRegister")
         .permitAll() // Cho phép tất cả mọi người truy cập vào 2 địa chỉ này
         .antMatchers(
             "/user/edit",

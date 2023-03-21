@@ -11,7 +11,8 @@ cloud:
 application:
   bucket:
     name: test-rules-hust-bk
-
+  url:
+    server: localhost:8080
 logging:
   level:
     com:

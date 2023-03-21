@@ -41,6 +41,9 @@ public class UserAService implements UserService {
   private final S3BucketStorageService service;
   private final EmailService emailService;
 
+  @Value("${application.url.server}")
+  private String urlServer;
+
   @Value("${application.bucket.name}")
   private String bucketName;
 
@@ -198,6 +201,23 @@ public class UserAService implements UserService {
       return false;
     }
 
+    String subject = "Confirm đăng ký trên HUST-EXAM";
+    String OTP = generateOTP();
+    String linkConfirm = "http://"+urlServer+"/confirmOTPByEmailWhenRegister?email="+ registerForAppRequest.getEmail() +"&OTP="+OTP;
+    String button = "<a href=\"" + linkConfirm + "\">"
+            + "Confirm mail" + "</a>";
+    String body =
+            "Chào bạn <br/> LinkConfirm của bạn là: "
+                    + button
+            + ". <br/> Lưu ý không tiện lộ mail này với bất kỳ ai. <br/> Cám ơn";
+
+    Boolean statusSendEmail = emailService.sendSimpleMail(
+            EmailDetails.builder().recipient(registerForAppRequest.getEmail()).subject(subject).msgBody(body).build());
+
+    if (!statusSendEmail) {
+      return false;
+    }
+
     UserEntity userEntity = new UserEntity();
 
     userEntity.setEmail(registerForAppRequest.getEmail());
@@ -205,14 +225,25 @@ public class UserAService implements UserService {
     userEntity.setName(registerForAppRequest.getName());
     userEntity.setSchool(1);
     userEntity.setRole("01");
-    userEntity.setStatus("1");
+    userEntity.setStatus("0");
     userEntity.setScore(0);
+    userEntity.setOTP(OTP);
     userRepository.save(userEntity);
     return true;
   }
 
   @Override
   public Boolean forgotPassword(String email) {
+
+    UserEntity userEntity = userRepository.findUserEntityByEmail(email);
+
+    if (Objects.isNull(userEntity)) {
+      return Boolean.FALSE;
+    }
+
+    if ("0".equals(userEntity.getStatus())) {
+      return Boolean.FALSE;
+    }
 
     String subject = "Mã OTP xác nhận quên mật khẩu";
     String OTP = generateOTP();
@@ -224,7 +255,6 @@ public class UserAService implements UserService {
         EmailDetails.builder().recipient(email).subject(subject).msgBody(body).build());
 
     if (statusSendEmail) {
-      UserEntity userEntity = userRepository.findUserEntityByEmail(email);
       userEntity.setOTP(OTP);
       userEntity.setTimeOTP(LocalDateTime.now());
       userRepository.save(userEntity);
@@ -246,6 +276,26 @@ public class UserAService implements UserService {
     }
 
     return Boolean.FALSE;
+  }
+
+  @Override
+  public String confirmOTOByEmailWhenRegister(String email, String otp) throws ServiceException {
+    UserEntity userEntity = userRepository.findUserEntityByEmail(email);
+    if (Objects.isNull(userEntity)) {
+      return "<h1>Tài khoản của bạn không tồn tại</h1>";
+    }
+
+    if ("1".equals(userEntity.getStatus())) {
+      return "<h1>Tài khoản của bạn đã được active từ trước</h1>";
+    }
+
+    if (!otp.equals(userEntity.getOTP())) {
+      return "<h1>Xác thực tài khoản không thành công</h1>";
+    }
+
+    userEntity.setStatus("1");
+    userRepository.save(userEntity);
+    return "<h1>Xác thực tài khoản thành công</h1>";
   }
 
   private String generateOTP() {

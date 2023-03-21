@@ -34,4 +34,6 @@ public interface UserService {
     Boolean forgotPassword(String email);
 
     Boolean verifyOTP(String email, String otp, String password);
+
+    String confirmOTOByEmailWhenRegister(String email, String otp) throws ServiceException;
 }
