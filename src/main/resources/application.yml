@@ -13,6 +13,8 @@ application:
     name: test-rules-hust-bk
   url:
     server: localhost:8080
+  upload:
+    folder: E:\datn\upload\
 logging:
   level:
     com:
